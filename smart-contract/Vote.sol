@@ -9,6 +9,7 @@ TODO:
     5. public function to show progress
     6. add Test deploy script for local testing
     7. update compiler to latest
+    8. public function canVote
  */
 
 contract FundRaising {
