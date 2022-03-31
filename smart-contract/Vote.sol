@@ -1,4 +1,15 @@
-pragma solidity ^0.1.0;
+pragma solidity ^0.4.25;
+
+/**
+TODO: 
+    1. Add logging for debugging
+    2. Add %stake for votes according to amount
+    3. Know deadline details
+    4. minimumContribution in which unit
+    5. public function to show progress
+    6. add Test deploy script for local testing
+    7. update compiler to latest
+ */
 
 contract FundRaising {
     // TODO: adress payable
@@ -21,7 +32,7 @@ contract FundRaising {
     Request[] public requests;
 
     constructor(uint256 _deadline, uint256 _goal) public {
-        minimumContribution = 1000000; // minimum amount to contribute
+        minimumContribution = 1; // minimum amount to contribute
         // TODO: understand
         deadline = block.number + _deadline;
         goal = _goal;
@@ -84,6 +95,7 @@ contract FundRaising {
         thisRequest.numberOfVoters++;
     }
 
+    // Final Payment to company owner
     function makePayment(uint256 index) public onlyAdmin {
         Request storage thisRequest = requests[index];
         require(thisRequest.completed == false);
