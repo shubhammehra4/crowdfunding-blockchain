@@ -25,14 +25,14 @@
 }
 
 .rightside {
+    padding-right: 10px;
     list-style-type: none;
-    padding-right: 100px;
     margin-top: 0;
     flex: 220%;
     height: 100%;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: right;
 }
 
 .navbar a {
@@ -47,7 +47,27 @@
 }
 
 .navbar a:hover {
-    color: rgb(127, 0, 255);
+  color: rgb(127, 0, 255);
+}
+
+.right {
+  display: flex;
+}
+
+#btn {
+  margin-top: 10px;
+  margin-right: 50px;
+  text-decoration: none;
+  padding-left: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  justify-content: center;
+  padding-top: 5px;
+  background-image: linear-gradient(to bottom right, #7F00FF, #BF40BF);
+  height: 46px;
+  width: 400px;
+  color: white;
+  font-size: 17px;
 }
 
 @media only screen and (max-width: 900px) {
