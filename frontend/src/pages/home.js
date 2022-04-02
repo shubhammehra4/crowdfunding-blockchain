@@ -11,9 +11,20 @@ function Home() {
         <a href="#home" style={{ textDecoration: "none" }}>
           <button className="primary-button" id="view_btn">
             <Link to="/">
-              <span style={{ color: 'white', fontSize: 17 }}> View Opportunities </span>
+              <span style={{ color: "white", fontSize: 17 }}>
+                {" "}
+                View Opportunities{" "}
+              </span>
             </Link>
             <a href="#" class="arr arr-prev"></a>
+          </button>
+          <button className="primary-button" id="view_btn">
+            <Link to="/Form1">
+              <span style={{ color: "white", fontSize: 17 }}>
+                {" "}
+                Create Campaign{" "}
+              </span>
+            </Link>
           </button>
         </a>
       </div>

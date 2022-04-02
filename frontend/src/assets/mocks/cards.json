@@ -1,0 +1,54 @@
+[
+  {
+    "id": 1,
+    "company_name": "Company1",
+    "company_image": "https://via.placeholder.com/500x500",
+    "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime mollitia, molestiae quas vel sint commodi repudiandae consequuntur voluptatum laborum numquam blanditiis harum quisquam eius sed odit fugiat iusto fuga praesentium optio, eaque rerum! Provident similique accusantium nemo autem. Veritatis obcaecati tenetur iure eius earum ut molestias architecto voluptate aliquam nihil, eveniet aliquid culpa officia aut!",
+    "website": "www.google.com",
+    "ceo": "Soham",
+    "goal": "100",
+    "minimum_contribution": "100",
+    "deadline": "1657477800000",
+    "owner_address": "njjunhudwnhjwehjn",
+    "contract_adress": "nunhunuunhnhnhn"
+  },
+  {
+    "id": 2,
+    "company_name": "Company2",
+    "company_image": "https://via.placeholder.com/600x500",
+    "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime mollitia, molestiae quas vel sint commodi repudiandae consequuntur voluptatum laborum numquam blanditiis harum quisquam eius sed odit fugiat iusto fuga praesentium optio, eaque rerum! Provident similique accusantium nemo autem. Veritatis obcaecati tenetur iure eius earum ut molestias architecto voluptate aliquam nihil, eveniet aliquid culpa officia aut!",
+    "website": "www.yahoo.com",
+    "ceo": "Soham 2",
+    "goal": "10",
+    "minimum_contribution": "1",
+    "deadline": "1657477800000",
+    "owner_address": "njjunhudwnhjwehjn",
+    "contract_adress": "nunhunuunhnhnhn"
+  },
+  {
+    "id": 3,
+    "company_name": "Company3",
+    "company_image": "https://via.placeholder.com/600x600",
+    "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime mollitia, molestiae quas vel sint commodi repudiandae consequuntur voluptatum laborum numquam blanditiis harum quisquam eius sed odit fugiat iusto fuga praesentium optio, eaque rerum! Provident similique accusantium nemo autem. Veritatis obcaecati tenetur iure eius earum ut molestias architecto voluptate aliquam nihil, eveniet aliquid culpa officia aut!",
+    "website": "www.yahoo.com",
+    "ceo": "Soham 3",
+    "goal": "1000",
+    "minimum_contribution": "10",
+    "deadline": "1657477800000",
+    "owner_address": "njjunhudwnhjwehjn",
+    "contract_adress": "nunhunuunhnhnhn"
+  },
+  {
+    "id": 4,
+    "company_name": "Company4",
+    "company_image": "https://via.placeholder.com/400x500",
+    "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime mollitia, molestiae quas vel sint commodi repudiandae consequuntur voluptatum laborum numquam blanditiis harum quisquam eius sed odit fugiat iusto fuga praesentium optio, eaque rerum! Provident similique accusantium nemo autem. Veritatis obcaecati tenetur iure eius earum ut molestias architecto voluptate aliquam nihil, eveniet aliquid culpa officia aut!",
+    "website": "www.yahoo.com",
+    "ceo": "Soham 2",
+    "goal": "10",
+    "minimum_contribution": "1",
+    "deadline": "1657477800000",
+    "owner_address": "njjunhudwnhjwehjn",
+    "contract_adress": "nunhunuunhnhnhn"
+  }
+]
