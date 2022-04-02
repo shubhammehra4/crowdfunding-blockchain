@@ -1,21 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-/**
-TODO: 
-    1. public function to show progress/ description and previos requests
-    2. add Test deploy script for local testing
- */
-
 contract FundRaising {
-    mapping(address => uint256) private contributions;
-    uint256 public totalContributors; // TOTAL COUNT OF CONTRIBUTORS
-    uint256 public minimumContribution;
-    uint256 public deadline;
-    uint256 public goal;
-    uint256 public raisedAmount = 0;
-    address public owner;
-
     struct Request {
         string description;
         uint256 value;
@@ -24,6 +10,17 @@ contract FundRaising {
         bool completed;
         mapping(address => bool) hasVoted;
     }
+
+    mapping(address => uint256) private contributions;
+    address[] private contributors;
+    uint256 private totalContributors;
+    uint256 private minimumContribution;
+    uint256 private deadline;
+    uint256 private goal;
+    uint256 private consecutiveRequests = 0; // requests made without sharing any profit
+    uint256 private raisedAmount = 0;
+    address private owner;
+
     Request[] public requests;
 
     constructor(uint256 deadlineDays, uint256 _goal) {
@@ -40,6 +37,27 @@ contract FundRaising {
 
     /** ********** Methods *********** */
 
+    // Get fund details
+    function getDetails()
+        public
+        view
+        returns (
+            address, // owner
+            uint256, // raisedAmount
+            uint256, // totalContributors
+            uint256, // balance
+            address[] memory // contributors
+        )
+    {
+        return (
+            owner,
+            raisedAmount,
+            totalContributors,
+            address(this).balance,
+            contributors
+        );
+    }
+
     // Contribute to the project
     function contribute() public payable {
         require(
@@ -50,6 +68,7 @@ contract FundRaising {
 
         // new investor
         if (contributions[msg.sender] == 0) {
+            contributors.push(msg.sender);
             totalContributors++;
         }
 
@@ -72,6 +91,10 @@ contract FundRaising {
             value <= address(this).balance,
             "Requested amount is greater than fund balance"
         );
+        require(
+            consecutiveRequests <= 5,
+            "Cannot make 5 consecutive spending request without sharing profits"
+        );
 
         Request storage newRequest = requests.push();
         newRequest.value = value;
@@ -79,6 +102,7 @@ contract FundRaising {
         newRequest.recipient = recipient;
         newRequest.voteAmount = 0;
         newRequest.completed = false;
+        consecutiveRequests++;
     }
 
     // Get refund if the fund goal is not reached
@@ -94,6 +118,11 @@ contract FundRaising {
         );
 
         payable(msg.sender).transfer(contributions[msg.sender]);
+        uint256 idx = 0;
+        for (; idx < contributors.length; idx++) {
+            if (contributors[idx] == msg.sender) break;
+        }
+        delete contributors[idx];
         contributions[msg.sender] = 0;
     }
 
@@ -127,5 +156,17 @@ contract FundRaising {
 
         payable(thisRequest.recipient).transfer(thisRequest.value);
         thisRequest.completed = true;
+    }
+
+    // owner can share the profit with contributors
+    function shareProfit() public payable onlyOwner {
+        require(goal > raisedAmount, "Goal hasn't been reached");
+
+        for (uint256 idx = 0; idx < contributors.length; idx++) {
+            payable(contributors[idx]).transfer(
+                msg.value * (contributions[contributors[idx]] / raisedAmount)
+            );
+        }
+        consecutiveRequests = 0;
     }
 }
