@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/shubhammehra4/crowdfunding-blockchain#readme",
   "dependencies": {
+    "ethers": "^5.6.2",
     "react-router-dom": "^5.2.0"
   }
 }
