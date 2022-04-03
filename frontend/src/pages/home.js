@@ -8,25 +8,28 @@ function Home() {
       <div className="headerContainer">
         <h1> FundRaising </h1>
         <p> Lorem ipsum dolor sit amet, consectetur adipiscing elit. </p>
-        <a href="#home" style={{ textDecoration: "none" }}>
-          <button className="primary-button" id="view_btn">
-            <Link to="/">
-              <span style={{ color: "white", fontSize: 17 }}>
-                {" "}
-                View Opportunities{" "}
-              </span>
-            </Link>
-            <a href="#" class="arr arr-prev"></a>
-          </button>
-          <button className="primary-button" id="view_btn">
-            <Link to="/Form1">
-              <span style={{ color: "white", fontSize: 17 }}>
-                {" "}
-                Create Campaign{" "}
-              </span>
-            </Link>
-          </button>
-        </a>
+
+        <button className="primary-button" id="view_btn">
+          <Link to="/">
+            <span style={{ color: "white", fontSize: 17 }}>
+              {" "}
+              View Opportunities{" "}
+            </span>
+          </Link>
+          <a href="/" class="arr arr-prev">
+            {" "}
+            {}{" "}
+          </a>
+        </button>
+
+        <button className="primary-button" id="view_btn">
+          <Link to="/Form1">
+            <span style={{ color: "white", fontSize: 17 }}>
+              {" "}
+              Create Campaign{" "}
+            </span>
+          </Link>
+        </button>
       </div>
     </div>
   );

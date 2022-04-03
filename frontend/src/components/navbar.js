@@ -46,7 +46,7 @@ function Navbar() {
       <div className="right">
         <ul className="rightside">
           <li>
-            <Link to="/CardList" activeClass="active" style={{ fontSize: 16 }}>
+            <Link to="/FundList" activeClass="active" style={{ fontSize: 16 }}>
               {" "}
               Funds{" "}
             </Link>
