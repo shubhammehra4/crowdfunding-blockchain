@@ -9,27 +9,29 @@ function Home() {
         <h1> FundRaising </h1>
         <p> Lorem ipsum dolor sit amet, consectetur adipiscing elit. </p>
 
-        <button className="primary-button" id="view_btn">
-          <Link to="/">
-            <span style={{ color: "white", fontSize: 17 }}>
+        <div className="all_btn">
+          <button className="view_all_btn" id="view_btn">
+            <Link to="/FundList">
+              <span style={{ color: "white", fontSize: 17 }}>
+                {" "}
+                View Opportunities{" "}
+              </span>
+            </Link>
+            <a href="/" class="arr arr-prev">
               {" "}
-              View Opportunities{" "}
-            </span>
-          </Link>
-          <a href="/" class="arr arr-prev">
-            {" "}
-            {}{" "}
-          </a>
-        </button>
+              {}{" "}
+            </a>
+          </button>
 
-        <button className="primary-button" id="view_btn">
-          <Link to="/Form1">
-            <span style={{ color: "white", fontSize: 17 }}>
-              {" "}
-              Create Campaign{" "}
-            </span>
-          </Link>
-        </button>
+          <button className="create_btn" id="view_btn">
+            <Link to="/Form1">
+              <span style={{ color: "white", fontSize: 17 }}>
+                {" "}
+                Create Campaign{" "}
+              </span>
+            </Link>
+          </button>
+        </div>
       </div>
     </div>
   );

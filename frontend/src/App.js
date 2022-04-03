@@ -5,6 +5,7 @@ import Footer from "./components/footer";
 import Home from "./pages/home";
 import Form1 from "./pages/Form1";
 import FundList from "./pages/FundList";
+import FundDetails from "./components/FundDetails";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
           <Route exact path="/" element={<Home />} />
           <Route exact path="/Form1" element={<Form1 />} />
           <Route exact path="/FundList" element={<FundList />} />
+          <Route exact path="/fund/:id" element={<FundDetails />} />
         </Routes>
         <Footer />
       </Router>

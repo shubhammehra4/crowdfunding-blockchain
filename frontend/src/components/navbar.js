@@ -47,26 +47,22 @@ function Navbar() {
         <ul className="rightside">
           <li>
             <Link to="/FundList" activeClass="active" style={{ fontSize: 16 }}>
-              {" "}
-              Funds{" "}
+              Funds
             </Link>
           </li>
           <li>
             <Link to="/" activeClass="active" style={{ fontSize: 16 }}>
-              {" "}
-              My Investments{" "}
+              My Investments
             </Link>
           </li>
           <li>
             <Link to="/" activeClass="active" style={{ fontSize: 16 }}>
-              {" "}
-              Pending Decisions{" "}
+              Pending Decisions
             </Link>
           </li>
         </ul>
         <button onClick={onLoginHandler} id="btn">
-          {" "}
-          Connect Wallet{" "}
+          Connect Wallet
         </button>
       </div>
     </div>
