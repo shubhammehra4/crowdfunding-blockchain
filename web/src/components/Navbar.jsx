@@ -3,41 +3,65 @@ import "../styles/navbar.css";
 import { Link } from "react-router-dom";
 
 function Navbar() {
-  const [isConnected, setIsConnected] = useState(false);
+  // const [isConnected, setIsConnected] = useState(false);
 
-  const onLogin = () => {
-    setIsConnected(true);
-  };
+  // const onLogin = () => {
+  //   setIsConnected(true);
+  // };
 
-  const onLogout = () => {
-    setIsConnected(false);
-  };
+  // const onLogout = () => {
+  //   setIsConnected(false);
+  // };
 
-  const detectProvider = () => {
-    let provider;
+  // const detectProvider = () => {
+  //   let provider;
+  //   if (window.ethereum) {
+  //     provider = window.ethereum;
+  //   } else if (window.web3) {
+  //     provider = window.web3.currentProvider;
+  //   } else {
+  //     window.alert("No Ethereum browser detected!");
+  //   }
+  //   return provider;
+  // };
+
+  // const onLoginHandler = async () => {
+  //   const provider = detectProvider();
+  //   if (provider) {
+  //     if (provider !== window.ethereum) {
+  //       console.error("Not window.ethereum provider.");
+  //     }
+  //     await provider.request({
+  //       method: "eth_requestAccounts",
+  //     });
+  //     onLogin();
+  //   }
+  // };
+  const [defaultAccount, setDefaultAccount] = useState(null);
+
+  const connectWalletHandler = () => {
     if (window.ethereum) {
-      provider = window.ethereum;
-    } else if (window.web3) {
-      provider = window.web3.currentProvider;
+      window.ethereum.request({method: "eth_requestAccounts"})
+      .then(result => {
+        accountChangedHandler(result[0]);
+      })
     } else {
-      window.alert("No Ethereum browser detected!");
+      setErrorMessage("Install MetaMask");
     }
-    return provider;
-  };
+  }
 
-  const onLoginHandler = async () => {
-    const provider = detectProvider();
-    if (provider) {
-      if (provider !== window.ethereum) {
-        console.error("Not window.ethereum provider.");
-      }
-      await provider.request({
-        method: "eth_requestAccounts",
-      });
-      onLogin();
-    }
-  };
+  const accountChangedHandler = (newAccount) => {
+    setDefaultAccount(newAccount);
+    getUserBalance(newAccount);
+  }
 
+  const getUserBalance = (address) => {
+    window.ethereum.request({method: "eth_getBalance", params: [address, 'latest']})
+    .then(balance => {
+      getUserBalance(balance);
+    })
+  }
+  
   return (
     <div className="navbar">
       <div className="leftside">
@@ -61,9 +85,14 @@ function Navbar() {
             </Link>
           </li>
         </ul>
-        <button onClick={onLoginHandler} id="btn">
+        {defaultAccount ? 
+          <div>
+            <h3> Welcome {defaultAccount} </h3>
+          </div> : 
+          <button onClick={connectWalletHandler} id="btn">
           Connect Wallet
-        </button>
+          </button> 
+        }
       </div>
     </div>
   );
