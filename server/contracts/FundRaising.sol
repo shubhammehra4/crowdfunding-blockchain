@@ -161,6 +161,7 @@ contract FundRaising {
     // owner can share the profit with contributors
     function shareProfit() public payable onlyOwner {
         require(goal > raisedAmount, "Goal hasn't been reached");
+        require(msg.value > 0, "Transaction amount cannot be zero");
 
         for (uint256 idx = 0; idx < contributors.length; idx++) {
             payable(contributors[idx]).transfer(
