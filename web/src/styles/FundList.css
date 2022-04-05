@@ -1,5 +1,6 @@
 .allFunds {
-    padding-top: 70px;
+    font-family: 'Barlow Semi Condensed';
+    padding-top: 100px;
     width: 100%;
     height: auto;
     display: flex;
@@ -9,7 +10,6 @@
 }
 
 .allFunds .fundTitle {
-    font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans", Arial, sans-serif;
     font-size: 60px;;
 }
 

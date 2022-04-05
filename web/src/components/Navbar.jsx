@@ -37,6 +37,7 @@ function Navbar() {
   //     onLogin();
   //   }
   // };
+  
   const [defaultAccount, setDefaultAccount] = useState(null);
 
   const connectWalletHandler = () => {
@@ -70,27 +71,28 @@ function Navbar() {
       <div className="right">
         <ul className="rightside">
           <li>
-            <Link to="/FundList" activeClass="active" style={{ fontSize: 16 }}>
+            <Link to="/FundList" activeClass="active" style={{ fontSize: 20 }}>
               Funds
             </Link>
           </li>
           <li>
-            <Link to="/" activeClass="active" style={{ fontSize: 16 }}>
+            <Link to="/" activeClass="active" style={{ fontSize: 20 }}>
               My Investments
             </Link>
           </li>
           <li>
-            <Link to="/" activeClass="active" style={{ fontSize: 16 }}>
+            <Link to="/" activeClass="active" style={{ fontSize: 20 }}>
               Pending Decisions
             </Link>
           </li>
         </ul>
         {defaultAccount ? 
-          <div>
-            <h3> Welcome {defaultAccount} </h3>
-          </div> : 
+          <button id="welcome_btn">
+            Welcome
+          </button> 
+          : 
           <button onClick={connectWalletHandler} id="btn">
-          Connect Wallet
+            Connect Wallet
           </button> 
         }
       </div>

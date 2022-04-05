@@ -59,19 +59,22 @@ function FundCard({
 
       <Box color="gray.600">
         by{" "}
-        <Box as="span" color="gray.800" fontSize="sm">
+        <Box as="span" color="gray.800" fontSize="lg">
           <b> {ceo} </b>
         </Box>
       </Box>
+      
+       <Box>
+          Goal of: <span style={{ color: "black" }}> <b> {goal} </b> </span> ETH
+      </Box>
 
-      <Flex alignContent="center" py={2}>
-        <Text color={"gray.500"} pr={2}>
-          Goal of
-        </Text>
-        <Heading size="base" isTruncated>
-          {goal} ETH
-        </Heading>
-      </Flex>
+      <Box alignContent="center" fontSize="lg">
+          Minimum contribution of: <span style={{ color: "black" }}> <b> {minimum_contribution} </b> </span> ETH
+      </Box>
+
+      <Box alignContent="center" fontSize="lg">
+          Deadline: <span style={{ color: "black" }}> <b> {deadline} </b> </span> days
+      </Box>
     </Box>
   );
 }

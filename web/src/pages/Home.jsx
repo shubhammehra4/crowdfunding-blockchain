@@ -12,7 +12,7 @@ export default function Home() {
         <div className="all_btn">
           <button className="view_all_btn" id="view_btn">
             <Link to="/FundList">
-              <span style={{ color: "white", fontSize: 17 }}>
+              <span style={{ color: "white", fontSize: 19 }}>
                 {" "}
                 View Opportunities{" "}
               </span>
@@ -25,7 +25,7 @@ export default function Home() {
 
           <button className="create_btn" id="view_btn">
             <Link to="/Form1">
-              <span style={{ color: "white", fontSize: 17 }}>
+              <span style={{ color: "white", fontSize: 19 }}>
                 {" "}
                 Create Campaign{" "}
               </span>
