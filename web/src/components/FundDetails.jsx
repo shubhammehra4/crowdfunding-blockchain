@@ -1,85 +1,99 @@
 import React from "react";
 import {
-  Heading,
-  Avatar,
   Box,
-  Center,
+  Spacer,
   Flex,
+  Heading,
+  Img,
+  SimpleGrid,
   Text,
-  Stack,
-  Button,
+  Progress,
   useColorModeValue,
 } from "@chakra-ui/react";
 import { useParams } from "react-router-dom";
+import "../styles/FundDetails.css";
+import ul_image from '../assets/bulletins.png'; 
 
 export default function FundDetails() {
   const { id } = useParams();
 
   return (
     <div>
-      <Center py={6}>
+    <div className="fundDetails">
+
+      <div className="leftContainer">
+        
+      </div>
+
+      <div className="rightContainer">
         <Box
-          maxW={"270px"}
-          w={"full"}
-          bg={useColorModeValue("white", "gray.800")}
-          boxShadow={"2xl"}
-          rounded={"md"}
-          overflow={"hidden"}
+          px={5}
+          maxW={"700px"}
+          rounded={"lg"}
+          pos={"relative"}
+          zIndex={1}
         >
-          <Flex justify={"center"} mt={-12}>
-            <Avatar
-              size={"xl"}
-              src="https://www.google.com/search?q=image&rlz=1C1CHBD_enIN900IN900&sxsrf=APq-WBt5nGpwPpdKnM56wR3BE9L7YlLFNA:1648992495350&tbm=isch&source=iu&ictx=1&vet=1&fir=nH5liarSz56duM%252C0JWe7yDOKrVFAM%252C_%253Bn5hAWsQ-sgKo_M%252C-UStXW0dQEx4SM%252C_%253BDH7p1w2o_fIU8M%252CBa_eiczVaD9-zM%252C_%253Bz4_uU0QB2pe-SM%252C7SySw5zvOgPYAM%252C_%253BxE4uU8uoFN00aM%252CpEU77tdqT8sGCM%252C_%253BMOAYgJU89sFKnM%252CygIoihldBPn-LM%252C_%253B2DNOEjVi-CBaYM%252CAOz9-XMe1ixZJM%252C_%253BqXynBYpZpHkhWM%252C4O2GvGuD-Cf09M%252C_%253B0DzWhtJoQ1KWgM%252CcIQ7wXCEtJiOWM%252C_%253BbDjlNH-20Ukm8M%252CG9GbNX6HcZ2O_M%252C_%253B0oRviLGatf-4aM%252CG9GbNX6HcZ2O_M%252C_%253BgOUAFhrbQ2nYQM%252COXvyXJop1qSGqM%252C_&usg=AI4_-kRu-tKBdePLaICaM9xhqwaqc-XzOQ&sa=X&ved=2ahUKEwjtwLDf__f2AhX673MBHTaHA8cQ9QF6BAgDEAE&cshid=1648992519592782#imgrc=nH5liarSz56duM"
-              alt={"Author"}
-              css={{
-                border: "2px solid white",
-              }}
-            />
+          <Box mb='3' fontWeight="semibold" as="h4" fontSize="4xl" isTruncated>
+            Company Name
+          </Box>
+
+          <Box mb='3' color="gray.600">
+            by{" "}
+            <Box as="span" color="gray.800" fontSize="lg">
+              <b> Company CEO </b>
+            </Box>
+          </Box> 
+
+          <Box color="gray.500" mb='3'>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime mollitia, molestiae quas vel sint commodi repudiandae consequuntur voluptatum 
+          </Box>
+
+          <Flex>
+            <img src={ul_image}></img>
+            <Box mb='2'>
+              Company Website: <a href='https://www.google.com/'> www.google.com </a> 
+            </Box>
           </Flex>
 
-          <Box p={6}>
-            <Stack spacing={0} align={"center"} mb={5}>
-              <Heading fontSize={"2xl"} fontWeight={500} fontFamily={"body"}>
-                Hello
-              </Heading>
-              <Text color={"gray.500"}>Frontend Developer</Text>
-            </Stack>
+          <Flex>
+            <Text mb='2'> Goal of X ETH </Text>
+            <Spacer />
+            <Text> Target of Y ETH </Text>
+          </Flex>
 
-            <Stack direction={"row"} justify={"center"} spacing={6}>
-              <Stack spacing={0} align={"center"}>
-                <Text fontWeight={600}>23k</Text>
-                <Text fontSize={"sm"} color={"gray.500"}>
-                  Followers
-                </Text>
-              </Stack>
-              <Stack spacing={0} align={"center"}>
-                <Text fontWeight={600}>23k</Text>
-                <Text fontSize={"sm"} color={"gray.500"}>
-                  Followers
-                </Text>
-              </Stack>
-            </Stack>
+          <Progress
+            borderRadius="5"
+            colorScheme='brand'
+            size="sm"
+            value={300}
+            max={1000}
+            mb="4"
+          />
+          
+          <Flex>
+            <img src={ul_image}></img>
+            <Box alignContent="center" fontSize="lg" mb='3'>
+              Minimum contribution of: <span style={{ color: "black" }}> <b> minimum_contribution </b> </span> ETH
+            </Box>
+          </Flex>
+          
+          <Flex mb='3'>
+            <img src={ul_image}></img>
+            <Box alignContent="center" fontSize="lg">
+              Number of Contributors: <span style={{ color: "black" }}> <b> Z </b> </span> 
+            </Box>
+          </Flex>
 
-            <Button
-              w={"full"}
-              mt={8}
-              bg={useColorModeValue("#151f21", "gray.900")}
-              color={"white"}
-              rounded={"md"}
-              _hover={{
-                transform: "translateY(-2px)",
-                boxShadow: "lg",
-              }}
-            >
-              Follow
-            </Button>
-          </Box>
+          <Flex>
+            <img src={ul_image}></img>
+            <Box alignContent="center" fontSize="lg">
+              Deadline: <span style={{ color: "black" }}> <b> deadline </b> </span> days
+            </Box>
+          </Flex>
+        
         </Box>
-      </Center>
-
-      <div>
-        <h1> Current Fund ID is: {id} </h1>
       </div>
+    </div>
     </div>
   );
 }
