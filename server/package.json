@@ -4,8 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon src/index.js"
+    "dev": "nodemon src/index.js",
+    "test": "npx hardhat test",
+    "local-network": "npx hardhat node",
+    "deploy-contract": "npx hardhat run --network localhost scripts/deployFundRaising.js"
   },
   "keywords": [],
   "author": "",
