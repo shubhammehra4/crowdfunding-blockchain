@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon src/index.js",
     "test": "npx hardhat test",
-    "local-network": "npx hardhat node",
+    "start-network": "npx hardhat node",
     "deploy-contract": "npx hardhat run --network localhost scripts/deployFundRaising.js"
   },
   "keywords": [],

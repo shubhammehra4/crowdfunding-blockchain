@@ -20,6 +20,10 @@ describe("Fund Raising", () => {
       BigNumber.from("0"), // totalContributors
       BigNumber.from("0"), // balance
       [], // contributors
+      [], // descriptions of requests
+      [], // values of requests
+      [], // recipients of requests
+      [], // status of requests
     ]);
   });
 });

@@ -1,6 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+// import "hardhat/console.sol";
+
+/**
+    1. Decide percentage
+*/
+
 contract FundRaising {
     struct Request {
         string description;
@@ -8,24 +14,28 @@ contract FundRaising {
         address recipient;
         uint256 voteAmount;
         bool completed;
+        uint8 minimumVotePercent;
         mapping(address => bool) hasVoted;
     }
 
+    uint32 private totalContributors;
     mapping(address => uint256) private contributions;
     address[] private contributors;
-    uint256 private totalContributors;
+
     uint256 private minimumContribution;
     uint256 private deadline;
     uint256 private goal;
-    uint256 private consecutiveRequests = 0; // requests made without sharing any profit
+
+    // requests made without sharing any profit
+    uint8 private consecutiveRequests = 0;
     uint256 private raisedAmount = 0;
     address private owner;
 
     Request[] public requests;
 
-    constructor(uint256 deadlineDays, uint256 _goal) {
+    constructor(uint256 _deadline, uint256 _goal) {
         minimumContribution = 100000000000000000; // minimum amount to contribute in wei (0.1 ether)
-        deadline = block.timestamp + (deadlineDays * 1 days);
+        deadline = block.timestamp + _deadline;
         goal = _goal;
         owner = msg.sender;
     }
@@ -46,15 +56,36 @@ contract FundRaising {
             uint256, // raisedAmount
             uint256, // totalContributors
             uint256, // balance
-            address[] memory // contributors
+            address[] memory, // contributors
+            string[] memory, // descriptions of requests
+            uint256[] memory, // values of requests
+            address[] memory, // recipients of requests
+            bool[] memory // status of requests
         )
     {
+        string[] memory descriptions = new string[](requests.length);
+        uint256[] memory values = new uint256[](requests.length);
+        address[] memory recipients = new address[](requests.length);
+        bool[] memory status = new bool[](requests.length);
+
+        for (uint32 i = 0; i < requests.length; i++) {
+            Request storage req = requests[i];
+            descriptions[i] = req.description;
+            values[i] = req.value;
+            recipients[i] = req.recipient;
+            status[i] = req.completed;
+        }
+
         return (
             owner,
             raisedAmount,
             totalContributors,
             address(this).balance,
-            contributors
+            contributors,
+            descriptions,
+            values,
+            recipients,
+            status
         );
     }
 
@@ -85,7 +116,8 @@ contract FundRaising {
     function createSpendingRequest(
         string memory description,
         address recipient,
-        uint256 value // in wei
+        uint256 value, // in wei
+        uint8 minimumVotePercent
     ) public onlyOwner {
         require(
             value <= address(this).balance,
@@ -96,10 +128,16 @@ contract FundRaising {
             "Cannot make 5 consecutive spending request without sharing profits"
         );
 
+        require(
+            minimumVotePercent >= 50,
+            "Minimum Vote Percent cannot be less than 50%"
+        );
+
         Request storage newRequest = requests.push();
         newRequest.value = value;
         newRequest.description = description;
         newRequest.recipient = recipient;
+        newRequest.minimumVotePercent = minimumVotePercent;
         newRequest.voteAmount = 0;
         newRequest.completed = false;
         consecutiveRequests++;
@@ -150,22 +188,41 @@ contract FundRaising {
             "Payment for the request is already done"
         );
         require(
-            thisRequest.voteAmount * 2 > raisedAmount,
+            thisRequest.voteAmount * 100 >=
+                raisedAmount * thisRequest.minimumVotePercent,
             "Not enough votes in favour of the request"
-        ); // atleast 50% voted
+        ); // atleast minimumVotePercent voted
 
         payable(thisRequest.recipient).transfer(thisRequest.value);
         thisRequest.completed = true;
     }
 
+    // @ref-https://ethereum.stackexchange.com/questions/55701/how-to-do-solidity-percentage-calculation
+    function mulScale(
+        uint256 x,
+        uint256 y,
+        uint256 scale
+    ) internal pure returns (uint256) {
+        uint256 a = x / scale;
+        uint256 b = x % scale;
+        uint256 c = y / scale;
+        uint256 d = y % scale;
+
+        return a * c * scale + a * d + b * c + (b * d) / scale;
+    }
+
     // owner can share the profit with contributors
     function shareProfit() public payable onlyOwner {
-        require(goal > raisedAmount, "Goal hasn't been reached");
+        require(goal <= raisedAmount, "Goal hasn't been reached");
         require(msg.value > 0, "Transaction amount cannot be zero");
 
         for (uint256 idx = 0; idx < contributors.length; idx++) {
             payable(contributors[idx]).transfer(
-                msg.value * (contributions[contributors[idx]] / raisedAmount)
+                mulScale(
+                    msg.value,
+                    contributions[contributors[idx]],
+                    raisedAmount
+                )
             );
         }
         consecutiveRequests = 0;

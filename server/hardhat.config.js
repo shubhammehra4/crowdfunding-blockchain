@@ -6,4 +6,10 @@ require("@nomiclabs/hardhat-ethers");
  */
 module.exports = {
   solidity: "0.8.10",
+  networks: {
+    hardhat: {
+      chainId: 1337,
+      loggingEnabled: true,
+    },
+  },
 };
