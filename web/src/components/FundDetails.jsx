@@ -3,8 +3,7 @@ import {
   Box,
   Spacer,
   Flex,
-  Heading,
-  Img,
+  Button,
   SimpleGrid,
   Text,
   Progress,
@@ -13,6 +12,38 @@ import {
 import { useParams } from "react-router-dom";
 import "../styles/FundDetails.css";
 import ul_image from '../assets/bulletins.png'; 
+import requests from '../assets/mocks/requests.json'
+
+function RequestCard({
+  id,
+  description,
+  amount,
+}) {
+  return (
+    <Box
+      role={"group"}
+      p={6}
+      maxW={"550px"}
+      bg={useColorModeValue("white", "gray.800")}
+      boxShadow={"xl"}
+      rounded={"lg"}  
+      pos={"relative"}
+      zIndex={1}
+    >
+      <Box mt="5" fontSize="xl">
+        <b>Description:</b> {description}
+      </Box>
+
+      <Box mt='3' mb='3' fontSize="xl">
+        <b> Amount Requested: </b> {amount} ETH
+      </Box>
+
+      <Button colorScheme='brand' borderRadius={20} mt='2' maxH={7} justifySelf='end'> 
+        Yes 
+      </Button>
+    </Box>
+  );
+}
 
 export default function FundDetails() {
   const { id } = useParams();
@@ -93,7 +124,24 @@ export default function FundDetails() {
         
         </Box>
       </div>
+
     </div>
+
+    <div className="bottomHalf">
+      <h1 className="bottomTitle"> Spending Requests </h1>
+      <SimpleGrid columns={2} spacing={20}>
+        {requests.map((request) => (
+          <div key={request.id}>
+            <RequestCard
+              id={request.id}
+              description={request.description}
+              amount={request.amount}
+            />
+          </div>
+        ))}
+      </SimpleGrid>
+    </div>
+
     </div>
   );
 }
