@@ -3,10 +3,6 @@ pragma solidity ^0.8.0;
 
 // import "hardhat/console.sol";
 
-/**
-    1. Decide percentage
-*/
-
 contract FundRaising {
     struct Request {
         string description;
@@ -180,7 +176,7 @@ contract FundRaising {
         thisRequest.voteAmount += contributions[msg.sender];
     }
 
-    // get the amount if a spending request is accepted by contributors
+    // Get the amount if a spending request is accepted by contributors
     function makePayment(uint256 index) public onlyOwner {
         Request storage thisRequest = requests[index];
         require(
@@ -197,6 +193,7 @@ contract FundRaising {
         thisRequest.completed = true;
     }
 
+    // Calculate (x*y)/scale
     // @ref-https://ethereum.stackexchange.com/questions/55701/how-to-do-solidity-percentage-calculation
     function mulScale(
         uint256 x,
@@ -211,7 +208,7 @@ contract FundRaising {
         return a * c * scale + a * d + b * c + (b * d) / scale;
     }
 
-    // owner can share the profit with contributors
+    // Owner can share the profit with contributors
     function shareProfit() public payable onlyOwner {
         require(goal <= raisedAmount, "Goal hasn't been reached");
         require(msg.value > 0, "Transaction amount cannot be zero");
