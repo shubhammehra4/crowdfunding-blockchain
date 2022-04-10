@@ -14,6 +14,11 @@ contract FundRaising {
         mapping(address => bool) hasVoted;
     }
 
+    struct Report {
+        uint256 timestamp;
+        string link;
+    }
+
     uint32 private totalContributors;
     mapping(address => uint256) private contributions;
     address[] private contributors;
@@ -24,6 +29,7 @@ contract FundRaising {
 
     // requests made without sharing any profit
     uint8 private consecutiveRequests = 0;
+    Report[] private reports;
     uint256 private raisedAmount = 0;
     address private owner;
 
@@ -34,6 +40,9 @@ contract FundRaising {
         deadline = block.timestamp + _deadline;
         goal = _goal;
         owner = msg.sender;
+        Report storage report = reports.push();
+        report.link = "Intial report";
+        report.timestamp = block.timestamp;
     }
 
     modifier onlyOwner() {
@@ -123,7 +132,10 @@ contract FundRaising {
             consecutiveRequests <= 5,
             "Cannot make 5 consecutive spending request without sharing profits"
         );
-
+        require(
+            reports[reports.length - 1].timestamp >= block.timestamp - 30 days,
+            "Please share a company report before making a request"
+        );
         require(
             minimumVotePercent >= 50,
             "Minimum Vote Percent cannot be less than 50%"
@@ -137,6 +149,23 @@ contract FundRaising {
         newRequest.voteAmount = 0;
         newRequest.completed = false;
         consecutiveRequests++;
+    }
+
+    // Share company report with stake holders
+    function shareReport(string memory link) public onlyOwner {
+        Report storage report = reports.push();
+        report.link = link;
+        report.timestamp = block.timestamp;
+    }
+
+    // Get all reports shared
+    function getReports() public view returns (Report[] memory) {
+        Report[] memory sharedReports = new Report[](reports.length - 1);
+        for (uint32 i = 1; i < reports.length; i++) {
+            sharedReports[i - 1] = reports[i];
+        }
+
+        return sharedReports;
     }
 
     // Get refund if the fund goal is not reached
