@@ -5,67 +5,34 @@ import {
   Flex,
   Heading,
   HStack,
-  Link,
   Tag,
   Text,
+  useToast,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { Link as RouteLink } from "react-router-dom";
 
 const Links = [
   { label: "Funds", link: "/funds" },
-  { label: "My Investments", link: "my-investments" },
+  { label: "My Campaigns", link: "my-campaigns" },
 ];
 
 const NavLink = ({ children }) => (
-  <Link
+  <Button
+    variant="link"
     px={2}
     py={1}
     _hover={{
-      textDecoration: "none",
+      textDecoration: "underline",
       color: "rgb(127, 0, 255)",
     }}
   >
     {children}
-  </Link>
+  </Button>
 );
 
 function Navbar() {
-  // const [isConnected, setIsConnected] = useState(false);
-
-  // const onLogin = () => {
-  //   setIsConnected(true);
-  // };
-
-  // const onLogout = () => {
-  //   setIsConnected(false);
-  // };
-
-  // const detectProvider = () => {
-  //   let provider;
-  //   if (window.ethereum) {
-  //     provider = window.ethereum;
-  //   } else if (window.web3) {
-  //     provider = window.web3.currentProvider;
-  //   } else {
-  //     window.alert("No Ethereum browser detected!");
-  //   }
-  //   return provider;
-  // };
-
-  // const onLoginHandler = async () => {
-  //   const provider = detectProvider();
-  //   if (provider) {
-  //     if (provider !== window.ethereum) {
-  //       console.error("Not window.ethereum provider.");
-  //     }
-  //     await provider.request({
-  //       method: "eth_requestAccounts",
-  //     });
-  //     onLogin();
-  //   }
-  // };
-
+  const toast = useToast();
   const [defaultAccount, setDefaultAccount] = useState(undefined);
 
   const connectWalletHandler = () => {
@@ -76,7 +43,13 @@ function Navbar() {
           accountChangedHandler(result[0]);
         });
     } else {
-      setErrorMessage("Install MetaMask");
+      toast({
+        title: "Install MetaMask",
+        description: "Metamask required to conenct to wallet",
+        status: "error",
+        duration: 2000,
+        isClosable: true,
+      });
     }
   };
 
@@ -113,10 +86,10 @@ function Navbar() {
             <Heading fontSize={["xl", "2xl", "4xl"]}>Fund Raising</Heading>
           </RouteLink>
 
-          <HStack as={"nav"} pl="300px" spacing={4} display={{ base: "none", md: "flex"}} fontSize="20px">
+          <HStack as={"nav"} spacing={4} display={{ base: "none", md: "flex" }}>
             {Links.map(({ label, link }) => (
-              <RouteLink to={link}>
-                <NavLink key={link}>{label}</NavLink>
+              <RouteLink to={link} key={link}>
+                <NavLink>{label}</NavLink>
               </RouteLink>
             ))}
           </HStack>
@@ -126,18 +99,18 @@ function Navbar() {
             <Tag colorScheme="green" size="lg" borderRadius="full">
               <CheckCircleIcon w={5} h={5} />{" "}
               <Text fontWeight="semibold" px="2">
-                Wallet Connected{" "}
+                Wallet Connected
               </Text>
             </Tag>
           ) : (
             <Button
               onClick={connectWalletHandler}
               color="white"
+              colorScheme="purple"
               fontSize={["sm", "md", "md"]}
               bgGradient="linear(to-br, #7f00ff, #bf40bf)"
-              _hover={{
-                bgGradient: "linear(to-br, #8000ffd7, #bf40bfd7)",
-              }}
+              // _hover={{ bgColor: "linear(to-u, #8000ffd7, #bf40bfd7)" }}
+              // _focus={{ bgGradient: "linear(to-br, #8000ffd7, #bf40bfd7)" }}
             >
               Connect Wallet
             </Button>

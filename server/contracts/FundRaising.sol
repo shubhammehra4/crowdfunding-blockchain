@@ -35,8 +35,12 @@ contract FundRaising {
 
     Request[] public requests;
 
-    constructor(uint256 _deadline, uint256 _goal) {
-        minimumContribution = 100000000000000000; // minimum amount to contribute in wei (0.1 ether)
+    constructor(
+        uint256 _deadline,
+        uint256 _goal,
+        uint256 _minimumContribution
+    ) {
+        minimumContribution = _minimumContribution;
         deadline = block.timestamp + _deadline;
         goal = _goal;
         owner = msg.sender;
