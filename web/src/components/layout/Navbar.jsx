@@ -100,7 +100,7 @@ function Navbar() {
       py="2"
       borderBlockEnd="2px"
       borderBlockEndColor="#7f00ff"
-      height="10vh"
+      height="11vh"
     >
       <Flex
         h={16}
@@ -113,7 +113,7 @@ function Navbar() {
             <Heading fontSize={["xl", "2xl", "4xl"]}>Fund Raising</Heading>
           </RouteLink>
 
-          <HStack as={"nav"} spacing={4} display={{ base: "none", md: "flex" }}>
+          <HStack as={"nav"} pl="300px" spacing={4} display={{ base: "none", md: "flex"}} fontSize="20px">
             {Links.map(({ label, link }) => (
               <RouteLink to={link}>
                 <NavLink key={link}>{label}</NavLink>
@@ -123,7 +123,7 @@ function Navbar() {
         </HStack>
         <Flex alignItems={"center"}>
           {defaultAccount ? (
-            <Tag colorScheme="green" size="lg">
+            <Tag colorScheme="green" size="lg" borderRadius="full">
               <CheckCircleIcon w={5} h={5} />{" "}
               <Text fontWeight="semibold" px="2">
                 Wallet Connected{" "}
@@ -131,6 +131,7 @@ function Navbar() {
             </Tag>
           ) : (
             <Button
+              onClick={connectWalletHandler}
               color="white"
               fontSize={["sm", "md", "md"]}
               bgGradient="linear(to-br, #7f00ff, #bf40bf)"
