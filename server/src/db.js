@@ -22,7 +22,8 @@ Company.init(
         website: DataTypes.STRING,
         goal: DataTypes.STRING,
         minimum_contribution: DataTypes.STRING, 
-        deadline: DataTypes.STRING
+        deadline: DataTypes.STRING,
+        image_url: DataTypes.STRING
     },
     { sequelize, modelName: "Company" }
 );

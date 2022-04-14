@@ -24,6 +24,17 @@ class GetCompanies {
     }
 
 
+    async getAllCompanies() {
+        let [err, companies] = await this.utility.invoker(this.Company.findAll());
+
+        if(err) {
+            console.log(err);
+            throw new Error('Something went wrong, please try again');
+        }
+        return companies.map((company)=>company.get());
+    }
+
+
     
 }
 module.exports = GetCompanies;
