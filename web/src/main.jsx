@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
+import GloabContextWrapper from "./contexts/global";
 
 const theme = extendTheme({
   colors: {
@@ -25,7 +26,9 @@ const theme = extendTheme({
 ReactDOM.render(
   <React.StrictMode>
     <ChakraProvider theme={theme}>
-      <App />
+      <GloabContextWrapper>
+        <App />
+      </GloabContextWrapper>
     </ChakraProvider>
   </React.StrictMode>,
   document.getElementById("root")
