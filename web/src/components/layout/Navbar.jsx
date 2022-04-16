@@ -1,16 +1,8 @@
 import { CheckCircleIcon } from "@chakra-ui/icons";
-import {
-  Box,
-  Button,
-  Flex,
-  Heading,
-  HStack,
-  Tag,
-  Text,
-  useToast,
-} from "@chakra-ui/react";
+import { Box, Button, Flex, Heading, HStack, Tag, Text, useToast } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { Link as RouteLink } from "react-router-dom";
+import { useGlobalContext } from "../../contexts/global";
 
 const Links = [
   { label: "Funds", link: "/funds" },
@@ -33,15 +25,13 @@ const NavLink = ({ children }) => (
 
 function Navbar() {
   const toast = useToast();
-  const [defaultAccount, setDefaultAccount] = useState(undefined);
+  const { defaultAccount, setDefaultAccount } = useGlobalContext();
 
   const connectWalletHandler = () => {
     if (window.ethereum) {
-      window.ethereum
-        .request({ method: "eth_requestAccounts" })
-        .then((result) => {
-          accountChangedHandler(result[0]);
-        });
+      window.ethereum.request({ method: "eth_requestAccounts" }).then((result) => {
+        accountChangedHandler(result[0]);
+      });
     } else {
       toast({
         title: "Install MetaMask",
@@ -68,11 +58,11 @@ function Navbar() {
 
   const chainChangedHandler = () => {
     window.location.reload();
-  }
+  };
 
-  window.ethereum.on('accountsChanged', accountChangedHandler);
+  window.ethereum.on("accountsChanged", accountChangedHandler);
 
-  window.ethereum.on('chainChanged', chainChangedHandler);
+  window.ethereum.on("chainChanged", chainChangedHandler);
 
   return (
     <Box
@@ -83,12 +73,7 @@ function Navbar() {
       borderBlockEndColor="#7f00ff"
       height="11vh"
     >
-      <Flex
-        h={16}
-        px="6"
-        alignItems={"center"}
-        justifyContent={"space-between"}
-      >
+      <Flex h={16} px="6" alignItems={"center"} justifyContent={"space-between"}>
         <HStack spacing={16} alignItems="center">
           <RouteLink to={"/"}>
             <Heading fontSize={["xl", "2xl", "4xl"]}>Fund Raising</Heading>
@@ -107,7 +92,7 @@ function Navbar() {
             <Tag colorScheme="green" size="lg" borderRadius="full">
               <CheckCircleIcon w={5} h={5} />{" "}
               <Text fontWeight="semibold" px="2">
-                Wallet Connected 
+                Wallet Connected ...{defaultAccount.toString().slice(30)}
               </Text>
             </Tag>
           ) : (

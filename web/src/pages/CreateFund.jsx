@@ -65,7 +65,7 @@ const CreateFund = () => {
         getWei(data.goal),
         getWei(data.minimumContribution)
       );
-      console.log({ ...data, deadline, contract_address, owner_address });
+      // console.log({ ...data, deadline, contract_address, owner_address });
 
       await server({
         url: "/companies",

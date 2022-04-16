@@ -6,7 +6,7 @@ import { BigNumber } from "ethers";
  */
 export function getWei(ethers) {
   let divider = 1;
-  while (ethers < 1) {
+  while (ethers !== Math.floor(ethers)) {
     ethers *= 10;
     divider *= 10;
   }

@@ -9,14 +9,17 @@ const GlobalContext = createContext(null);
 
 const GloabContextWrapper = ({ children }) => {
   const [funds, setFunds] = useState([]);
+  const [defaultAccount, setDefaultAccount] = useState(undefined);
 
-  const getFund = (id) => {
-    return funds.find((fund) => fund.id === id);
+  const getFund = (contract_address) => {
+    return funds.find((fund) => fund.contract_address === contract_address);
   };
 
   return (
     <QueryClientProvider client={queryClient}>
-      <GlobalContext.Provider value={{ server, queryClient, setFunds, getFund }}>
+      <GlobalContext.Provider
+        value={{ server, queryClient, setFunds, getFund, defaultAccount, setDefaultAccount }}
+      >
         {children}
       </GlobalContext.Provider>
     </QueryClientProvider>

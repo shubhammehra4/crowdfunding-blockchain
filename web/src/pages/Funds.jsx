@@ -1,6 +1,5 @@
 import {
   Box,
-  Center,
   Flex,
   Heading,
   Icon,
@@ -12,17 +11,25 @@ import {
   Tag,
   Text,
 } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
 import { format, isAfter } from "date-fns";
+import { useEffect } from "react";
 import { FaEthereum } from "react-icons/fa";
 import { useQuery } from "react-query";
-import getFunds from "../data/getFunds";
+import { Link as RouterLink } from "react-router-dom";
 import { useGlobalContext } from "../contexts/global";
-import { useEffect } from "react";
+import getFunds from "../data/getFunds";
 
-function FundCard({ fund }) {
-  const { id, company_name, image_url, description, ceo, goal, minimum_contribution, deadline } =
-    fund;
+export function FundCard({ fund }) {
+  const {
+    company_name,
+    image_url,
+    description,
+    ceo,
+    goal,
+    minimum_contribution,
+    deadline,
+    contract_address,
+  } = fund;
   const isOngoing = isAfter(new Date(deadline), Date.now());
 
   return (
@@ -44,7 +51,7 @@ function FundCard({ fund }) {
 
       <Box p="4">
         <Flex justifyContent="space-between">
-          <RouterLink to={`/fund/${id}`}>
+          <RouterLink to={`/fund/${contract_address}`}>
             <Heading fontSize="3xl" _hover={{ textDecoration: "underline" }}>
               {company_name}
             </Heading>
@@ -101,7 +108,7 @@ function FundCard({ fund }) {
   );
 }
 
-function FundCardSkeleton() {
+export function FundCardSkeleton() {
   return (
     <Box boxShadow="lg" bg="white" rounded="lg">
       <Skeleton height="72" roundedTop="lg" />
@@ -113,7 +120,7 @@ function FundCardSkeleton() {
   );
 }
 
-function EmptyFundList() {
+export function EmptyFundList() {
   return (
     <Box my="20">
       <Heading textAlign="center">No Funds found!!</Heading>
