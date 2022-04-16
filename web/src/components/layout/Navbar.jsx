@@ -55,7 +55,7 @@ function Navbar() {
 
   const accountChangedHandler = (newAccount) => {
     setDefaultAccount(newAccount);
-    getUserBalance(newAccount);
+    getUserBalance(newAccount.toString());
   };
 
   const getUserBalance = (address) => {
@@ -65,6 +65,14 @@ function Navbar() {
         getUserBalance(balance);
       });
   };
+
+  const chainChangedHandler = () => {
+    window.location.reload();
+  }
+
+  window.ethereum.on('accountsChanged', accountChangedHandler);
+
+  window.ethereum.on('chainChanged', chainChangedHandler);
 
   return (
     <Box
@@ -99,7 +107,7 @@ function Navbar() {
             <Tag colorScheme="green" size="lg" borderRadius="full">
               <CheckCircleIcon w={5} h={5} />{" "}
               <Text fontWeight="semibold" px="2">
-                Wallet Connected
+                Wallet Connected 
               </Text>
             </Tag>
           ) : (
