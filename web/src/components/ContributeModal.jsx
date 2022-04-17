@@ -19,7 +19,12 @@ import {
 import { useRef, useState } from "react";
 import contribute from "../contract/contribute";
 
-export default function ContributionModal({ contract_address, contributor_address, refetch }) {
+export default function ContributionModal({
+  contract_address,
+  contributor_address,
+  refetch,
+  label = "Contribute",
+}) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [isLoading, setIsLoading] = useState(false);
   const amountRef = useRef();
@@ -27,14 +32,12 @@ export default function ContributionModal({ contract_address, contributor_addres
   async function handleSubmission(e) {
     e.preventDefault();
     try {
-      console.log("hello");
       setIsLoading(true);
       const amount = Number(amountRef.current.value);
       await contribute(contract_address, contributor_address, amount);
 
       setIsLoading(false);
       setTimeout(() => {
-        console.log("Calling");
         refetch();
       }, 5000);
       onClose();
@@ -44,8 +47,10 @@ export default function ContributionModal({ contract_address, contributor_addres
     }
   }
   return (
-    <Box>
-      <Button onClick={onOpen}>Contribute</Button>
+    <Box w="full">
+      <Button w="full" colorScheme="linkedin" onClick={onOpen}>
+        {label}
+      </Button>
 
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />

@@ -1,24 +1,38 @@
-import React, { useMemo } from "react";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
   Box,
-  Spacer,
-  Flex,
   Button,
-  SimpleGrid,
-  Text,
-  Progress,
-  useColorModeValue,
+  Flex,
+  Heading,
+  HStack,
+  Icon,
   IconButton,
+  Image,
+  Link,
+  List,
+  ListIcon,
+  ListItem,
+  Progress,
+  SimpleGrid,
+  Stack,
+  Tag,
+  Text,
+  Tooltip,
+  useColorModeValue,
 } from "@chakra-ui/react";
-import { useParams } from "react-router-dom";
-import "../styles/FundDetails.css";
-import ul_image from "../assets/bulletins.png";
-import requests from "../assets/mocks/requests.json";
-import { useGlobalContext } from "../contexts/global";
-import { useQuery } from "react-query";
-import getFundDeatils from "../contract/fundDetails";
-import ContributionModal from "../components/ContributeModal";
+import { format, formatDistance, isAfter } from "date-fns";
+import React from "react";
+import { AiFillRightCircle } from "react-icons/ai";
+import { FaEthereum } from "react-icons/fa";
 import { IoReload } from "react-icons/io5";
+import { useQuery } from "react-query";
+import { useParams } from "react-router-dom";
+import requests from "../assets/mocks/requests.json";
+import ContributionModal from "../components/ContributeModal";
+import SpendingRequestModal from "../components/SpendingRequestModal";
+import { useGlobalContext } from "../contexts/global";
+import getFundDeatils from "../contract/fundDetails";
+import "../styles/FundDetails.css";
 
 function RequestCard({ id, description, amount }) {
   return (
@@ -50,7 +64,6 @@ function RequestCard({ id, description, amount }) {
 export default function FundDetails() {
   const { contract_address } = useParams();
   const { getFund, defaultAccount } = useGlobalContext();
-  const fund = useMemo(() => getFund(contract_address), []);
 
   const {
     data: fundDetails,
@@ -58,101 +71,223 @@ export default function FundDetails() {
     refetch,
   } = useQuery(["contract", contract_address], () => getFundDeatils(contract_address));
 
+  const isOwner =
+    !isLoading &&
+    defaultAccount &&
+    defaultAccount.toLowerCase() === fundDetails.owner.toLowerCase();
+
+  const isContributor =
+    !isLoading &&
+    defaultAccount &&
+    fundDetails.contributors?.includes(defaultAccount.toLowerCase());
+
   if (isLoading) return "Loading...";
 
+  const fund = getFund(contract_address);
+  const isOngoing = isAfter(new Date(fund.deadline), Date.now());
+
   return (
-    <div>
-      <IconButton isLoading={isLoading} onClick={refetch} icon={<IoReload />} />
-      <div className="fundDetails">
-        <div className="leftContainer"></div>
+    <>
+      {JSON.stringify(fundDetails, null, 2)}
+      <Box my="20" display="flex" justifyContent="center">
+        <HStack p="5" px="32" spacing="16" alignItems="flex-start">
+          <Image
+            src={fund.image_url}
+            alt={fund.company_name}
+            w="450px"
+            h="450px"
+            objectFit="cover"
+            rounded="lg"
+            shadow="2xl"
+          />
 
-        <div className="rightContainer">
-          <Box px={5} maxW={"700px"} rounded={"lg"} pos={"relative"} zIndex={1}>
-            <Box mb="3" fontWeight="semibold" as="h4" fontSize="4xl" isTruncated>
-              Company Name
-            </Box>
-
-            <Box mb="3" color="gray.600">
-              by{" "}
-              <Box as="span" color="gray.800" fontSize="lg">
-                <b> Company CEO </b>
-              </Box>
-            </Box>
-
-            <Box color="gray.500" mb="3">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime mollitia, molestiae
-              quas vel sint commodi repudiandae consequuntur voluptatum
-            </Box>
-
-            <Flex>
-              <img src={ul_image}></img>
-              <Box mb="2">
-                Company Website: <a href="https://www.google.com/"> www.google.com </a>
+          <Box maxW="xl">
+            <Flex justifyContent="space-between" alignItems="center">
+              <Heading>{fund.company_name}</Heading>
+              <Box>
+                <Tag colorScheme={isOngoing ? "green" : "orange"} fontWeight="semibold">
+                  {isOngoing ? "Ongoing" : "Ended"}
+                </Tag>
               </Box>
             </Flex>
 
-            <Flex>
-              <Text mb="2"> Goal of X ETH </Text>
-              <Spacer />
-              <Text> Target of Y ETH </Text>
+            <Flex justifyContent="space-between" alignItems="center">
+              <Text my="1">
+                by{" "}
+                <Text as="span" fontWeight="semibold" fontSize="lg">
+                  {fund.ceo}
+                </Text>
+              </Text>
+              {isOngoing && (
+                <Text>
+                  ends {formatDistance(new Date(fund.deadline), new Date(), { addSuffix: true })}
+                </Text>
+              )}
+            </Flex>
+
+            <Flex fontSize="lg" my="3" justifyContent="space-between">
+              <Text>
+                Raised{" "}
+                <Text
+                  as="span"
+                  fontWeight="semibold"
+                  display="inline-flex"
+                  gap="1"
+                  alignItems="center"
+                >
+                  {fundDetails.raisedAmount}
+                  <Icon as={FaEthereum} color="purple.700" />
+                </Text>
+              </Text>
+
+              <Text>
+                Target is{" "}
+                <Text
+                  as="span"
+                  fontWeight="semibold"
+                  display="inline-flex"
+                  gap="1"
+                  alignItems="center"
+                >
+                  {fund.goal}
+                  <Icon as={FaEthereum} color="purple.700" />
+                </Text>
+              </Text>
             </Flex>
 
             <Progress
               borderRadius="5"
               colorScheme="brand"
               size="sm"
-              value={300}
-              max={1000}
+              value={fundDetails.raisedAmount}
+              max={fund.goal}
               mb="4"
             />
 
-            <Flex>
-              <img src={ul_image}></img>
-              <Box alignContent="center" fontSize="lg" mb="3">
-                Minimum contribution of:{" "}
-                <span style={{ color: "black" }}>
-                  {" "}
-                  <b> minimum_contribution </b>{" "}
-                </span>{" "}
-                ETH
-              </Box>
-            </Flex>
+            <Text mt="5" color="gray.700" whiteSpace="pre-wrap">
+              {fund.description}
+            </Text>
 
-            <Flex mb="3">
-              <img src={ul_image}></img>
-              <Box alignContent="center" fontSize="lg">
-                Number of Contributors:{" "}
-                <span style={{ color: "black" }}>
-                  {" "}
-                  <b> Z </b>{" "}
-                </span>
-              </Box>
-            </Flex>
-
-            <Flex>
-              <img src={ul_image}></img>
-              <Box alignContent="center" fontSize="lg">
+            <List fontSize="lg" mt="3" spacing="2">
+              <ListItem>
+                <ListIcon as={AiFillRightCircle} color="purple.500" />
+                <Link color="brand.700" href={fund.website} isExternal>
+                  Company Website <ExternalLinkIcon mx="2px" />
+                </Link>
+              </ListItem>
+              <ListItem>
+                <ListIcon as={AiFillRightCircle} color="purple.500" />
+                Minimum Contribution:{" "}
+                <Text
+                  as="span"
+                  fontWeight="semibold"
+                  display="inline-flex"
+                  gap="1"
+                  alignItems="center"
+                >
+                  {fund.minimum_contribution}
+                  <Icon as={FaEthereum} color="purple.700" />
+                </Text>
+              </ListItem>
+              <ListItem>
+                <ListIcon as={AiFillRightCircle} color="purple.500" />
+                Total Contributors:{" "}
+                <Text as="span" fontWeight="semibold">
+                  {fundDetails.totalContributors}
+                </Text>
+              </ListItem>
+              <ListItem>
+                <ListIcon as={AiFillRightCircle} color="purple.500" />
                 Deadline:{" "}
-                <span style={{ color: "black" }}>
-                  {" "}
-                  <b> deadline </b>{" "}
-                </span>{" "}
-                days
-              </Box>
-            </Flex>
+                <Text as="span" fontWeight="semibold">
+                  {format(new Date(fund.deadline), "do MMMM, yyy  - hh:mm aaa")}
+                </Text>
+              </ListItem>
+            </List>
           </Box>
-        </div>
-      </div>
 
-      {JSON.stringify(fundDetails, null, 2)}
+          <Box w="lg" maxW="xs">
+            {!isOwner && !isContributor && (
+              <Box>
+                <Flex justifyContent="space-between">
+                  <Text fontSize="lg" my="3">
+                    Contribute to this Fund
+                  </Text>
+                  <Tooltip label={"Refresh"}>
+                    <IconButton isLoading={isLoading} onClick={refetch} icon={<IoReload />} />
+                  </Tooltip>
+                </Flex>
 
-      {defaultAccount && defaultAccount[0].toLowerCase() !== fundDetails.owner.toLowerCase() && (
-        <ContributionModal
-          contract_address={contract_address}
-          contributor_address={defaultAccount[0]}
-          refetch={refetch}
-        />
-      )}
+                <ContributionModal
+                  contract_address={contract_address}
+                  contributor_address={defaultAccount}
+                  refetch={refetch}
+                />
+              </Box>
+            )}
+
+            {isContributor && (
+              <Box>
+                <Flex justifyContent="space-between">
+                  <Tag textAlign="center" size="lg" colorScheme="green" fontWeight="semibold">
+                    You are a Contributor
+                  </Tag>
+                  <Tooltip label={"Refresh"}>
+                    <IconButton isLoading={isLoading} onClick={refetch} icon={<IoReload />} />
+                  </Tooltip>
+                </Flex>
+                <Stack>
+                  <Text mt="3" fontSize="lg">
+                    You can view Spending Request and Fund reports.
+                  </Text>
+
+                  <ContributionModal
+                    contract_address={contract_address}
+                    contributor_address={defaultAccount}
+                    refetch={refetch}
+                    label="Contribute More"
+                  />
+                </Stack>
+              </Box>
+            )}
+            {isOwner && (
+              <Box>
+                <Flex justifyContent="space-between">
+                  <Tag textAlign="center" size="lg" colorScheme="green" fontWeight="semibold">
+                    Fund Owner
+                  </Tag>
+                  <Tooltip label={"Refresh"}>
+                    <IconButton isLoading={isLoading} onClick={refetch} icon={<IoReload />} />
+                  </Tooltip>
+                </Flex>
+                <Stack mt="5" spacing="5">
+                  <Text fontWeight="semibold" fontSize="lg">
+                    Fund Balance:{" "}
+                    <Text
+                      as="span"
+                      fontWeight="semibold"
+                      display="inline-flex"
+                      gap="1"
+                      alignItems="center"
+                    >
+                      {fundDetails.balance}
+                      <Icon as={FaEthereum} color="purple.700" />
+                    </Text>
+                  </Text>
+                  <SpendingRequestModal
+                    contract_address={contract_address}
+                    owner_address={defaultAccount}
+                    balance={fundDetails.balance}
+                    refetch={refetch}
+                  />
+                  <Button colorScheme="twitter">Share Profit</Button>
+                  <Button colorScheme="facebook">Share Report</Button>
+                </Stack>
+              </Box>
+            )}
+          </Box>
+        </HStack>
+      </Box>
 
       <div className="bottomHalf">
         <h1 className="bottomTitle"> Spending Requests </h1>
@@ -168,6 +303,6 @@ export default function FundDetails() {
           ))}
         </SimpleGrid>
       </div>
-    </div>
+    </>
   );
 }

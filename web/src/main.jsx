@@ -1,16 +1,22 @@
+import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import React from "react";
 import ReactDOM from "react-dom";
-import "./index.css";
+import { QueryClient, QueryClientProvider } from "react-query";
 import App from "./App";
-import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import GloabContextWrapper from "./contexts/global";
+import "./index.css";
+
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { staleTime: 5 * 60 * 1000 } },
+});
 
 const theme = extendTheme({
   colors: {
     brand: {
       50: "#44337A",
-      100: "#B794F4",
-      500: "#B794F4",
+      100: "#7f00ff",
+      500: "#7f00ff",
+      700: "#7f00ff",
     },
   },
 });
@@ -26,9 +32,11 @@ const theme = extendTheme({
 ReactDOM.render(
   <React.StrictMode>
     <ChakraProvider theme={theme}>
-      <GloabContextWrapper>
-        <App />
-      </GloabContextWrapper>
+      <QueryClientProvider client={queryClient}>
+        <GloabContextWrapper>
+          <App />
+        </GloabContextWrapper>
+      </QueryClientProvider>
     </ChakraProvider>
   </React.StrictMode>,
   document.getElementById("root")

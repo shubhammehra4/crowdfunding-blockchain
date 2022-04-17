@@ -12,12 +12,9 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { format, isAfter } from "date-fns";
-import { useEffect } from "react";
 import { FaEthereum } from "react-icons/fa";
-import { useQuery } from "react-query";
 import { Link as RouterLink } from "react-router-dom";
 import { useGlobalContext } from "../contexts/global";
-import getFunds from "../data/getFunds";
 
 export function FundCard({ fund }) {
   const {
@@ -100,7 +97,7 @@ export function FundCard({ fund }) {
             Deadline:{" "}
             <Text as="span" fontWeight="semibold">
               {format(new Date(deadline), "do MMMM, yyy  - hh:mm aaa")}
-            </Text>{" "}
+            </Text>
           </Text>
         </Stack>
       </Box>
@@ -129,14 +126,7 @@ export function EmptyFundList() {
 }
 
 export default function Funds() {
-  const { setFunds } = useGlobalContext();
-  const { data: funds, isLoading } = useQuery("funds", getFunds);
-
-  useEffect(() => {
-    if (funds) {
-      setFunds(funds);
-    }
-  }, [funds]);
+  const { funds, isLoading } = useGlobalContext();
 
   return (
     <Box my="10" display="flex" justifyContent="center" w="full">

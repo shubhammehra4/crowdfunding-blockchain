@@ -16,7 +16,7 @@ function App() {
             <Route exact path="/create-fund" element={<CreateFund />} />
             <Route exact path="/funds" element={<Funds />} />
             <Route exact path="/fund/:contract_address" element={<FundDetails />} />
-            <Route exact path="/my_campaigns" element={<MyCampaigns />} />
+            <Route exact path="/my-campaigns" element={<MyCampaigns />} />
           </Routes>
         </Layout>
       </Router>

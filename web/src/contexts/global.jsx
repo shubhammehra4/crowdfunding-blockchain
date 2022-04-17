@@ -1,32 +1,42 @@
 import axios from "axios";
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { QueryClient, QueryClientProvider } from "react-query";
+import React, { createContext, useCallback, useContext, useState } from "react";
+import { useQuery } from "react-query";
+import getFunds from "../data/getFunds";
 
 const server = axios.create({ baseURL: "http://localhost:5000" });
-const queryClient = new QueryClient({ defaultOptions: { queries: { staleTime: 5 * 60 * 1000 } } });
 
 const GlobalContext = createContext(null);
 
 const GloabContextWrapper = ({ children }) => {
-  const [funds, setFunds] = useState([]);
+  const { data: funds, isLoading, refetch: refetchFunds } = useQuery("funds", getFunds);
   const [defaultAccount, setDefaultAccount] = useState(undefined);
 
   const getFund = (contract_address) => {
     return funds.find((fund) => fund.contract_address === contract_address);
   };
 
-  const myFunds = (owner_address) => {
-    return funds.find((fund) => fund.owner_address === owner_address);
+  const myFunds = () => {
+    if (isLoading || defaultAccount === undefined) return [];
+    return funds.filter(
+      (fund) => fund.owner_address.toLowerCase() === defaultAccount.toLowerCase()
+    );
   };
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <GlobalContext.Provider
-        value={{ server, queryClient, setFunds, getFund, defaultAccount, setDefaultAccount, myFunds}}
-      >
-        {children}
-      </GlobalContext.Provider>
-    </QueryClientProvider>
+    <GlobalContext.Provider
+      value={{
+        isLoading,
+        server,
+        funds,
+        refetchFunds,
+        getFund,
+        defaultAccount,
+        setDefaultAccount,
+        myFunds,
+      }}
+    >
+      {children}
+    </GlobalContext.Provider>
   );
 };
 

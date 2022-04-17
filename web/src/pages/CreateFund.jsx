@@ -52,20 +52,18 @@ const createFundValidation = object().shape({
 const CreateFund = () => {
   const toast = useToast();
   const navigate = useNavigate();
-  const { queryClient } = useGlobalContext();
+  const { refetchFunds } = useGlobalContext();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = useCallback(async (data) => {
     try {
       setIsLoading(true);
       const deadline = new Date(data.deadline).getTime();
-      console.log(deadline, getWei(data.goal), getWei(data.minimumContribution));
       const { contract_address, owner_address } = await deployContarct(
         deadline,
         getWei(data.goal),
         getWei(data.minimumContribution)
       );
-      // console.log({ ...data, deadline, contract_address, owner_address });
 
       await server({
         url: "/companies",
@@ -87,7 +85,7 @@ const CreateFund = () => {
         isClosable: true,
       });
 
-      queryClient.invalidateQueries("funds", { exact: true });
+      refetchFunds();
       navigate("/funds");
     } catch (error) {
       console.log(error);

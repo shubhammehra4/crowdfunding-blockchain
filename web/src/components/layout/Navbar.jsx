@@ -1,27 +1,37 @@
 import { CheckCircleIcon } from "@chakra-ui/icons";
 import { Box, Button, Flex, Heading, HStack, Tag, Text, useToast } from "@chakra-ui/react";
-import React, { useState } from "react";
-import { Link as RouteLink } from "react-router-dom";
+import React from "react";
+import { Link as RouteLink, useMatch, useResolvedPath } from "react-router-dom";
 import { useGlobalContext } from "../../contexts/global";
 
 const Links = [
   { label: "Funds", link: "/funds" },
-  { label: "My Campaigns", link: "/my_campaigns" },
+  { label: "My Campaigns", link: "/my-campaigns" },
+  { label: "Create Campaign", link: "create-fund" },
 ];
 
-const NavLink = ({ children }) => (
-  <Button
-    variant="link"
-    px={2}
-    py={1}
-    _hover={{
-      textDecoration: "underline",
-      color: "rgb(127, 0, 255)",
-    }}
-  >
-    {children}
-  </Button>
-);
+const NavLink = ({ children, to }) => {
+  let resolved = useResolvedPath(to);
+  let match = useMatch({ path: resolved.pathname, end: true });
+
+  return (
+    <RouteLink to={to}>
+      <Button
+        variant="link"
+        px={2}
+        py={1}
+        textDecoration={match ? "underline" : "none"}
+        color={match ? "brand.700" : "gray.500"}
+        _hover={{
+          textDecoration: "underline",
+          color: "brand.700",
+        }}
+      >
+        {children}
+      </Button>
+    </RouteLink>
+  );
+};
 
 function Navbar() {
   const toast = useToast();
@@ -43,9 +53,10 @@ function Navbar() {
     }
   };
 
-  const accountChangedHandler = (newAccount) => {
-    setDefaultAccount(newAccount);
-    getUserBalance(newAccount.toString());
+  const accountChangedHandler = (res) => {
+    const account = Array.isArray(res) ? res[0] : res;
+    setDefaultAccount(account);
+    getUserBalance(account.toString());
   };
 
   const getUserBalance = (address) => {
@@ -81,9 +92,9 @@ function Navbar() {
 
           <HStack as={"nav"} spacing={4} display={{ base: "none", md: "flex" }}>
             {Links.map(({ label, link }) => (
-              <RouteLink to={link} key={link}>
-                <NavLink>{label}</NavLink>
-              </RouteLink>
+              <NavLink to={link} key={link}>
+                {label}
+              </NavLink>
             ))}
           </HStack>
         </HStack>

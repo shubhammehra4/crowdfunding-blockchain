@@ -25,8 +25,8 @@ export default async function getFundDeatils(contract_address) {
   for (let i = 0; i < spendingRequestsDescription.length; i++) {
     spendingRequests.push({
       description: spendingRequestsDescription[i],
-      value: spendingRequestsValue[i],
-      recipient: spendingRequestsRecipients[i],
+      value: BigNumber.from(spendingRequestsValue[i]).toNumber(),
+      recipient: spendingRequestsRecipients[i].toLowerCase(),
       status: spendingRequestsStatus[i],
     });
   }
@@ -36,7 +36,7 @@ export default async function getFundDeatils(contract_address) {
     raisedAmount: ethers.utils.formatEther(raisedAmount),
     totalContributors: BigNumber.from(totalContributors).toNumber(),
     balance: ethers.utils.formatEther(balance),
-    contributors,
+    contributors: contributors.map((c) => c.toLowerCase()),
     spendingRequests,
   };
 }
