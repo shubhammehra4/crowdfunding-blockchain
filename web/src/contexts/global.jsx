@@ -15,10 +15,14 @@ const GloabContextWrapper = ({ children }) => {
     return funds.find((fund) => fund.contract_address === contract_address);
   };
 
+  const myFunds = (owner_address) => {
+    return funds.find((fund) => fund.owner_address === owner_address);
+  };
+
   return (
     <QueryClientProvider client={queryClient}>
       <GlobalContext.Provider
-        value={{ server, queryClient, setFunds, getFund, defaultAccount, setDefaultAccount }}
+        value={{ server, queryClient, setFunds, getFund, defaultAccount, setDefaultAccount, myFunds}}
       >
         {children}
       </GlobalContext.Provider>

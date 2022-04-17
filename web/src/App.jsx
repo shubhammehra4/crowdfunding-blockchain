@@ -4,6 +4,7 @@ import CreateFund from "./pages/CreateFund";
 import FundDetails from "./pages/FundDetails";
 import Funds from "./pages/Funds";
 import Home from "./pages/Home";
+import MyCampaigns from "./pages/MyCampaigns";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
             <Route exact path="/create-fund" element={<CreateFund />} />
             <Route exact path="/funds" element={<Funds />} />
             <Route exact path="/fund/:contract_address" element={<FundDetails />} />
+            <Route exact path="/my_campaigns" element={<MyCampaigns />} />
           </Routes>
         </Layout>
       </Router>

@@ -6,7 +6,7 @@ import { useGlobalContext } from "../../contexts/global";
 
 const Links = [
   { label: "Funds", link: "/funds" },
-  { label: "My Campaigns", link: "my-campaigns" },
+  { label: "My Campaigns", link: "/my_campaigns" },
 ];
 
 const NavLink = ({ children }) => (
