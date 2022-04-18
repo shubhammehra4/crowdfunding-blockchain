@@ -9,27 +9,22 @@ export default async function getFundDeatils(contract_address) {
   const fundRaising = new ethers.Contract(contract_address, metadata.abi, signer);
   const fundDetails = await fundRaising.getDetails();
 
-  const [
-    owner,
-    raisedAmount,
-    totalContributors,
-    balance,
-    contributors,
-    spendingRequestsDescription,
-    spendingRequestsValue,
-    spendingRequestsRecipients,
-    spendingRequestsStatus,
-  ] = fundDetails;
+  const [owner, raisedAmount, totalContributors, balance, contributors, requests] = fundDetails;
 
-  const spendingRequests = [];
-  for (let i = 0; i < spendingRequestsDescription.length; i++) {
-    spendingRequests.push({
-      description: spendingRequestsDescription[i],
-      value: BigNumber.from(spendingRequestsValue[i]).toNumber(),
-      recipient: spendingRequestsRecipients[i].toLowerCase(),
-      status: spendingRequestsStatus[i],
-    });
-  }
+  const spendingRequests = requests.map((request) => ({
+    description: request[0],
+    value: BigNumber.from(request[1])
+      .div(BigNumber.from(BigInt(1e18)))
+      .toNumber(),
+    recipient: request[2],
+    voteAmount: BigNumber.from(request[3])
+      .div(BigNumber.from(BigInt(1e18)))
+      .toNumber(),
+    completed: request[4],
+    voters: request[5].map((v) => v.toLowerCase()),
+  }));
+
+  console.log(spendingRequests);
 
   return {
     owner,

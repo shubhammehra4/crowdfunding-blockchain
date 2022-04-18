@@ -1,5 +1,4 @@
 require("@nomiclabs/hardhat-ethers");
-const { ethers } = require("hardhat");
 const { expect } = require("chai");
 const { getWeiFromEthers } = require("../scripts/ethersToWei");
 const { BigNumber } = require("ethers");
@@ -19,6 +18,8 @@ describe("Fund Raising", () => {
       [], // contributors
       [], // descriptions of requests
       [], // values of requests
+      [], // vote amount
+      [], // voters
       [], // recipients of requests
       [], // status of requests
     ]);

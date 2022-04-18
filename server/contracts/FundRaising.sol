@@ -11,6 +11,7 @@ contract FundRaising {
         uint256 voteAmount;
         bool completed;
         uint8 minimumVotePercent;
+        address[] voters;
         mapping(address => bool) hasVoted;
     }
 
@@ -56,6 +57,15 @@ contract FundRaising {
 
     /** ********** Methods *********** */
 
+    struct Details {
+        string description;
+        uint256 value;
+        address recipient;
+        uint256 voteAmount;
+        bool completed;
+        address[] voters;
+    }
+
     // Get fund details
     function getDetails()
         public
@@ -66,23 +76,19 @@ contract FundRaising {
             uint256, // totalContributors
             uint256, // balance
             address[] memory, // contributors
-            string[] memory, // descriptions of requests
-            uint256[] memory, // values of requests
-            address[] memory, // recipients of requests
-            bool[] memory // status of requests
+            Details[] memory // spending requests details
         )
     {
-        string[] memory descriptions = new string[](requests.length);
-        uint256[] memory values = new uint256[](requests.length);
-        address[] memory recipients = new address[](requests.length);
-        bool[] memory status = new bool[](requests.length);
+        Details[] memory details = new Details[](requests.length);
 
         for (uint32 i = 0; i < requests.length; i++) {
             Request storage req = requests[i];
-            descriptions[i] = req.description;
-            values[i] = req.value;
-            recipients[i] = req.recipient;
-            status[i] = req.completed;
+            details[i].description = req.description;
+            details[i].value = req.value;
+            details[i].voteAmount = req.voteAmount;
+            details[i].recipient = req.recipient;
+            details[i].completed = req.completed;
+            details[i].voters = req.voters;
         }
 
         return (
@@ -91,19 +97,13 @@ contract FundRaising {
             totalContributors,
             address(this).balance,
             contributors,
-            descriptions,
-            values,
-            recipients,
-            status
+            details
         );
     }
 
     // Contribute to the project
     function contribute() public payable {
-        require(
-            msg.value > minimumContribution,
-            "Amount is less than minimum contribution amount"
-        );
+        require(msg.value > minimumContribution, "Amount is less than minimum contribution amount");
         require(block.timestamp < deadline, "Project deadline has passed");
 
         // new investor
@@ -128,10 +128,7 @@ contract FundRaising {
         uint256 value, // in wei
         uint8 minimumVotePercent
     ) public onlyOwner {
-        require(
-            value <= address(this).balance,
-            "Requested amount is greater than fund balance"
-        );
+        require(value <= address(this).balance, "Requested amount is greater than fund balance");
         require(
             consecutiveRequests <= 5,
             "Cannot make 5 consecutive spending request without sharing profits"
@@ -140,10 +137,7 @@ contract FundRaising {
             reports[reports.length - 1].timestamp >= block.timestamp - 30 days,
             "Please share a company report before making a request"
         );
-        require(
-            minimumVotePercent >= 50,
-            "Minimum Vote Percent cannot be less than 50%"
-        );
+        require(minimumVotePercent >= 50, "Minimum Vote Percent cannot be less than 50%");
 
         Request storage newRequest = requests.push();
         newRequest.value = value;
@@ -174,15 +168,9 @@ contract FundRaising {
 
     // Get refund if the fund goal is not reached
     function getRefund() public {
-        require(
-            block.timestamp > deadline,
-            "Project deadline hasn't been reached"
-        );
+        require(block.timestamp > deadline, "Project deadline hasn't been reached");
         require(raisedAmount < goal, "Fund Goal amount has been reached");
-        require(
-            contributions[msg.sender] > 0,
-            "You haven't contributed to this fund"
-        );
+        require(contributions[msg.sender] > 0, "You haven't contributed to this fund");
 
         payable(msg.sender).transfer(contributions[msg.sender]);
         uint256 idx = 0;
@@ -195,30 +183,21 @@ contract FundRaising {
 
     // Contributors can vote to decide if the spending request is acceptable
     function voteForRequest(uint256 index) public {
-        require(
-            contributions[msg.sender] > 0,
-            "You haven't contributed to this fund"
-        );
+        require(contributions[msg.sender] > 0, "You haven't contributed to this fund");
         Request storage thisRequest = requests[index];
-        require(
-            thisRequest.hasVoted[msg.sender] == false,
-            "Contributor has already voted"
-        );
+        require(thisRequest.hasVoted[msg.sender] == false, "Contributor has already voted");
 
         thisRequest.hasVoted[msg.sender] = true;
+        thisRequest.voters.push(msg.sender);
         thisRequest.voteAmount += contributions[msg.sender];
     }
 
     // Get the amount if a spending request is accepted by contributors
     function makePayment(uint256 index) public onlyOwner {
         Request storage thisRequest = requests[index];
+        require(thisRequest.completed == false, "Payment for the request is already done");
         require(
-            thisRequest.completed == false,
-            "Payment for the request is already done"
-        );
-        require(
-            thisRequest.voteAmount * 100 >=
-                raisedAmount * thisRequest.minimumVotePercent,
+            thisRequest.voteAmount * 100 >= raisedAmount * thisRequest.minimumVotePercent,
             "Not enough votes in favour of the request"
         ); // atleast minimumVotePercent voted
 
@@ -248,11 +227,7 @@ contract FundRaising {
 
         for (uint256 idx = 0; idx < contributors.length; idx++) {
             payable(contributors[idx]).transfer(
-                mulScale(
-                    msg.value,
-                    contributions[contributors[idx]],
-                    raisedAmount
-                )
+                mulScale(msg.value, contributions[contributors[idx]], raisedAmount)
             );
         }
         consecutiveRequests = 0;

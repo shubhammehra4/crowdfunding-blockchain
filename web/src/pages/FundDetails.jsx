@@ -2,6 +2,7 @@ import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
+  Center,
   Flex,
   Heading,
   HStack,
@@ -18,11 +19,10 @@ import {
   Tag,
   Text,
   Tooltip,
-  useColorModeValue,
 } from "@chakra-ui/react";
 import { format, formatDistance, isAfter } from "date-fns";
 import React from "react";
-import { AiFillRightCircle } from "react-icons/ai";
+import { AiFillCheckCircle, AiFillRightCircle } from "react-icons/ai";
 import { FaEthereum } from "react-icons/fa";
 import { IoReload } from "react-icons/io5";
 import { useQuery } from "react-query";
@@ -32,31 +32,78 @@ import ContributionModal from "../components/ContributeModal";
 import SpendingRequestModal from "../components/SpendingRequestModal";
 import { useGlobalContext } from "../contexts/global";
 import getFundDeatils from "../contract/fundDetails";
+import voteForRequest from "../contract/vote";
 import "../styles/FundDetails.css";
 
-function RequestCard({ id, description, amount }) {
+function RequestCard({
+  idx,
+  contract_address,
+  description,
+  value,
+  recipient,
+  isOwner,
+  voters,
+  defaultAccount,
+  progress,
+}) {
+  async function handleVote() {
+    await voteForRequest(contract_address, idx);
+  }
+
+  const hasVoted = voters.includes(defaultAccount);
+  const canWithDraw = progress > 0.5;
+
   return (
-    <Box
-      role={"group"}
-      p={6}
-      maxW={"550px"}
-      bg={useColorModeValue("white", "gray.800")}
-      boxShadow={"xl"}
-      rounded={"lg"}
-      pos={"relative"}
-      zIndex={1}
-    >
-      <Box mt="5" fontSize="xl">
-        <b>Description:</b> {description}
+    <Box py="4" px="3" backgroundColor="white" boxShadow="xl" rounded="lg" fontSize="lg" maxW="xl">
+      <Box my="3">
+        <Text fontWeight="semibold" fontSize="xl">
+          Description
+        </Text>
+        <Text>{description}</Text>
       </Box>
 
-      <Box mt="3" mb="3" fontSize="xl">
-        <b> Amount Requested: </b> {amount} ETH
-      </Box>
+      <Text as="span" fontWeight="semibold" display="inline-flex" gap="1" alignItems="center">
+        Amount Requested: {value}
+        <Icon as={FaEthereum} color="purple.700" />
+      </Text>
 
-      <Button colorScheme="brand" borderRadius={20} mt="2" maxH={7} justifySelf="end">
-        Yes
-      </Button>
+      <Text fontWeight="semibold" mt="2">
+        Recipient Account:{" "}
+        <Tag as="span" colorScheme="green" fontWeight="semibold">
+          {recipient}
+        </Tag>
+      </Text>
+
+      {isOwner ? (
+        <Box mt="5">
+          <Text fontWeight="semibold" fontSize="lg">
+            Vote: {progress * 100} %
+          </Text>
+          <Progress
+            borderRadius="5"
+            colorScheme="brand"
+            size="sm"
+            value={progress}
+            max={1}
+            mb="4"
+          />
+          <Button isDisabled={!canWithDraw} colorScheme="green" rounded="lg">
+            Withdaw
+          </Button>
+        </Box>
+      ) : (
+        <Box display="flex" alignItems="center" gap="3" mt="5">
+          <Button
+            colorScheme="brand"
+            rounded="lg"
+            onClick={handleVote}
+            leftIcon={<AiFillCheckCircle />}
+            isDisabled={Boolean(hasVoted)}
+          >
+            {hasVoted ? "Voted!" : "Vote Yes"}
+          </Button>
+        </Box>
+      )}
     </Box>
   );
 }
@@ -289,20 +336,35 @@ export default function FundDetails() {
         </HStack>
       </Box>
 
-      <div className="bottomHalf">
-        <h1 className="bottomTitle"> Spending Requests </h1>
-        <SimpleGrid columns={2} spacing={20}>
-          {requests.map((request) => (
-            <div key={request.id}>
-              <RequestCard
-                id={request.id}
-                description={request.description}
-                amount={request.amount}
-              />
-            </div>
-          ))}
-        </SimpleGrid>
-      </div>
+      {(isContributor || isOwner) && (
+        <Box px="32">
+          <Heading textAlign="center" my="5">
+            Spending Request
+          </Heading>
+          {fundDetails.spendingRequests.length > 0 ? (
+            <SimpleGrid columns={2} spacing={10}>
+              {fundDetails.spendingRequests.map((request, idx) => (
+                <RequestCard
+                  key={idx}
+                  idx={idx}
+                  contract_address={contract_address}
+                  description={request.description}
+                  value={request.value}
+                  progress={request.voteAmount / fundDetails.raisedAmount}
+                  voters={request.voters}
+                  recipient={request.recipient}
+                  isOwner={isOwner}
+                  defaultAccount={defaultAccount}
+                />
+              ))}
+            </SimpleGrid>
+          ) : (
+            <Center>
+              <Heading>No Spending Requests</Heading>
+            </Center>
+          )}
+        </Box>
+      )}
     </>
   );
 }
