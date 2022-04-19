@@ -1,40 +1,46 @@
 import {
   Box,
   Button,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  useDisclosure,
   FormControl,
   FormLabel,
-  InputGroup,
   Input,
-  InputRightElement,
-  Text,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import { useRef, useState } from "react";
-import contribute from "../contract/contribute";
+import shareReport from "../contract/shareReport";
 
-export default function ContributionModal({ contract_address, refetch, label = "Contribute" }) {
+export default function ShareReport({ contract_address, refetch }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const toast = useToast();
   const [isLoading, setIsLoading] = useState(false);
-  const amountRef = useRef();
+  const linkRef = useRef();
 
   async function handleSubmission(e) {
     e.preventDefault();
     try {
       setIsLoading(true);
-      const amount = Number(amountRef.current.value);
-      await contribute(contract_address, amount);
+      const link = linkRef.current.value;
+      await shareReport(contract_address, link);
 
       setIsLoading(false);
       setTimeout(() => {
         refetch();
       }, 5000);
+
+      toast({
+        title: "Successfully shared report",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
       onClose();
     } catch (error) {
       setIsLoading(false);
@@ -43,28 +49,20 @@ export default function ContributionModal({ contract_address, refetch, label = "
   }
   return (
     <Box w="full">
-      <Button w="full" colorScheme="linkedin" onClick={onOpen}>
-        {label}
+      <Button w="full" colorScheme="facebook" onClick={onOpen}>
+        Share Report
       </Button>
 
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Contribute</ModalHeader>
+          <ModalHeader>Share Report</ModalHeader>
           <ModalCloseButton />
           <form onSubmit={handleSubmission}>
             <ModalBody>
               <FormControl isRequired>
-                <FormLabel htmlFor="amount">Amount</FormLabel>
-
-                <InputGroup>
-                  <Input type="number" id="amount" name="amount" ref={amountRef} />
-                  <InputRightElement
-                    pointerEvents="none"
-                    color="gray.800"
-                    children={<Text color="purple.700">ETH</Text>}
-                  />
-                </InputGroup>
+                <FormLabel htmlFor="link">Link to report</FormLabel>
+                <Input type="url" id="link" name="link" ref={linkRef} />
               </FormControl>
             </ModalBody>
 
@@ -73,7 +71,7 @@ export default function ContributionModal({ contract_address, refetch, label = "
                 Close
               </Button>
               <Button isLoading={isLoading} type="submit" colorScheme="green">
-                Contribute
+                Share
               </Button>
             </ModalFooter>
           </form>

@@ -19,6 +19,7 @@ import {
   Tag,
   Text,
   Tooltip,
+  UnorderedList,
 } from "@chakra-ui/react";
 import { format, formatDistance, isAfter } from "date-fns";
 import React from "react";
@@ -27,13 +28,14 @@ import { FaEthereum } from "react-icons/fa";
 import { IoReload } from "react-icons/io5";
 import { useQuery } from "react-query";
 import { useParams } from "react-router-dom";
-import requests from "../assets/mocks/requests.json";
 import ContributionModal from "../components/ContributeModal";
+import ShareProfitModal from "../components/ShareProfitModal";
+import ShareReport from "../components/ShareReport";
 import SpendingRequestModal from "../components/SpendingRequestModal";
 import { useGlobalContext } from "../contexts/global";
 import getFundDeatils from "../contract/fundDetails";
 import voteForRequest from "../contract/vote";
-import "../styles/FundDetails.css";
+import withdraw from "../contract/withdraw";
 
 function RequestCard({
   idx,
@@ -42,7 +44,9 @@ function RequestCard({
   value,
   recipient,
   isOwner,
+  minimumVotePercent,
   voters,
+  completed,
   defaultAccount,
   progress,
 }) {
@@ -50,23 +54,39 @@ function RequestCard({
     await voteForRequest(contract_address, idx);
   }
 
+  async function handleWithdraw() {
+    await withdraw(contract_address, idx);
+  }
+
   const hasVoted = voters.includes(defaultAccount);
-  const canWithDraw = progress > 0.5;
+  const canWithDraw = Math.floor(progress * 100) > minimumVotePercent;
 
   return (
-    <Box py="4" px="3" backgroundColor="white" boxShadow="xl" rounded="lg" fontSize="lg" maxW="xl">
-      <Box my="3">
+    <Box
+      py="5"
+      px="3"
+      backgroundColor="white"
+      boxShadow="2xl"
+      bg="gray.50"
+      rounded="lg"
+      fontSize="lg"
+      maxW="xl"
+    >
+      <Flex justifyContent="space-between">
         <Text fontWeight="semibold" fontSize="xl">
           Description
         </Text>
-        <Text>{description}</Text>
-      </Box>
+        <Tag variant="solid" colorScheme={completed ? "green" : "orange"}>
+          {completed ? "Complete" : "Pending"}
+        </Tag>
+      </Flex>
+
+      <Text mt="2">{description}</Text>
 
       <Text as="span" fontWeight="semibold" display="inline-flex" gap="1" alignItems="center">
         Amount Requested: {value}
         <Icon as={FaEthereum} color="purple.700" />
       </Text>
-
       <Text fontWeight="semibold" mt="2">
         Recipient Account:{" "}
         <Tag as="span" colorScheme="green" fontWeight="semibold">
@@ -74,36 +94,47 @@ function RequestCard({
         </Tag>
       </Text>
 
-      {isOwner ? (
-        <Box mt="5">
-          <Text fontWeight="semibold" fontSize="lg">
-            Vote: {progress * 100} %
-          </Text>
-          <Progress
-            borderRadius="5"
-            colorScheme="brand"
-            size="sm"
-            value={progress}
-            max={1}
-            mb="4"
-          />
-          <Button isDisabled={!canWithDraw} colorScheme="green" rounded="lg">
-            Withdaw
-          </Button>
-        </Box>
-      ) : (
-        <Box display="flex" alignItems="center" gap="3" mt="5">
-          <Button
-            colorScheme="brand"
-            rounded="lg"
-            onClick={handleVote}
-            leftIcon={<AiFillCheckCircle />}
-            isDisabled={Boolean(hasVoted)}
-          >
-            {hasVoted ? "Voted!" : "Vote Yes"}
-          </Button>
-        </Box>
-      )}
+      {!completed &&
+        (isOwner ? (
+          <Box mt="5">
+            {!completed && (
+              <>
+                <Flex justifyContent="space-between" fontWeight="semibold" fontSize="lg" my="2">
+                  <Text>Vote: {(progress * 100).toFixed(2)}%</Text>
+                  <Text>Required atleast {minimumVotePercent}%</Text>
+                </Flex>
+                <Progress
+                  borderRadius="5"
+                  colorScheme="brand"
+                  size="sm"
+                  value={(progress * 100).toFixed(2)}
+                  max={100}
+                  mb="4"
+                />
+                <Button
+                  isDisabled={!canWithDraw}
+                  onClick={handleWithdraw}
+                  colorScheme="green"
+                  rounded="lg"
+                >
+                  Withdaw
+                </Button>
+              </>
+            )}
+          </Box>
+        ) : (
+          <Box display="flex" alignItems="center" gap="3" mt="5">
+            <Button
+              colorScheme="brand"
+              rounded="lg"
+              onClick={handleVote}
+              leftIcon={<AiFillCheckCircle />}
+              isDisabled={Boolean(hasVoted)}
+            >
+              {hasVoted ? "Voted!" : "Vote Yes"}
+            </Button>
+          </Box>
+        ))}
     </Box>
   );
 }
@@ -135,7 +166,7 @@ export default function FundDetails() {
 
   return (
     <>
-      {JSON.stringify(fundDetails, null, 2)}
+      {/* {JSON.stringify(fundDetails, null, 2)} */}
       <Box my="20" display="flex" justifyContent="center">
         <HStack p="5" px="32" spacing="16" alignItems="flex-start">
           <Image
@@ -265,11 +296,7 @@ export default function FundDetails() {
                   </Tooltip>
                 </Flex>
 
-                <ContributionModal
-                  contract_address={contract_address}
-                  contributor_address={defaultAccount}
-                  refetch={refetch}
-                />
+                <ContributionModal contract_address={contract_address} refetch={refetch} />
               </Box>
             )}
 
@@ -290,11 +317,32 @@ export default function FundDetails() {
 
                   <ContributionModal
                     contract_address={contract_address}
-                    contributor_address={defaultAccount}
                     refetch={refetch}
                     label="Contribute More"
                   />
                 </Stack>
+
+                <Box mt="5">
+                  <Text fontSize="lg" fontWeight="semibold">
+                    Shared Reports
+                  </Text>
+                  {fundDetails.sharedReports.length === 0 ? (
+                    <Text>No reports Shared</Text>
+                  ) : (
+                    <UnorderedList mt="3">
+                      {fundDetails.sharedReports.map((report) => (
+                        <ListItem>
+                          <Flex justifyContent="space-between">
+                            <Link color="purple.800" href={report.link} isExternal>
+                              {report.link}
+                            </Link>
+                            <Text>{report.date}</Text>
+                          </Flex>
+                        </ListItem>
+                      ))}
+                    </UnorderedList>
+                  )}
+                </Box>
               </Box>
             )}
             {isOwner && (
@@ -327,8 +375,8 @@ export default function FundDetails() {
                     balance={fundDetails.balance}
                     refetch={refetch}
                   />
-                  <Button colorScheme="twitter">Share Profit</Button>
-                  <Button colorScheme="facebook">Share Report</Button>
+                  <ShareProfitModal contract_address={contract_address} refetch={refetch} />
+                  <ShareReport contract_address={contract_address} refetch={refetch} />
                 </Stack>
               </Box>
             )}
@@ -337,7 +385,7 @@ export default function FundDetails() {
       </Box>
 
       {(isContributor || isOwner) && (
-        <Box px="32">
+        <Box px="32" my="10" mb="20">
           <Heading textAlign="center" my="5">
             Spending Request
           </Heading>
@@ -348,19 +396,16 @@ export default function FundDetails() {
                   key={idx}
                   idx={idx}
                   contract_address={contract_address}
-                  description={request.description}
-                  value={request.value}
+                  {...request}
                   progress={request.voteAmount / fundDetails.raisedAmount}
-                  voters={request.voters}
-                  recipient={request.recipient}
                   isOwner={isOwner}
                   defaultAccount={defaultAccount}
                 />
               ))}
             </SimpleGrid>
           ) : (
-            <Center>
-              <Heading>No Spending Requests</Heading>
+            <Center my="20">
+              <Heading fontSize="lg">No Spending Requests</Heading>
             </Center>
           )}
         </Box>

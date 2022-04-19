@@ -57,12 +57,13 @@ contract FundRaising {
 
     /** ********** Methods *********** */
 
-    struct Details {
+    struct RequestDetails {
         string description;
         uint256 value;
         address recipient;
         uint256 voteAmount;
         bool completed;
+        uint8 minimumVotePercent;
         address[] voters;
     }
 
@@ -76,11 +77,11 @@ contract FundRaising {
             uint256, // totalContributors
             uint256, // balance
             address[] memory, // contributors
-            Details[] memory // spending requests details
+            RequestDetails[] memory, // spending requests details
+            Report[] memory // shared reports
         )
     {
-        Details[] memory details = new Details[](requests.length);
-
+        RequestDetails[] memory details = new RequestDetails[](requests.length);
         for (uint32 i = 0; i < requests.length; i++) {
             Request storage req = requests[i];
             details[i].description = req.description;
@@ -88,7 +89,13 @@ contract FundRaising {
             details[i].voteAmount = req.voteAmount;
             details[i].recipient = req.recipient;
             details[i].completed = req.completed;
+            details[i].minimumVotePercent = req.minimumVotePercent;
             details[i].voters = req.voters;
+        }
+
+        Report[] memory sharedReports = new Report[](reports.length - 1);
+        for (uint32 i = 1; i < reports.length; i++) {
+            sharedReports[i - 1] = reports[i];
         }
 
         return (
@@ -97,7 +104,8 @@ contract FundRaising {
             totalContributors,
             address(this).balance,
             contributors,
-            details
+            details,
+            sharedReports
         );
     }
 

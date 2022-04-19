@@ -1,3 +1,4 @@
+import { format } from "date-fns";
 import { BigNumber, ethers } from "ethers";
 import FundRaisignFactory from "../assets/FundRaising.json";
 
@@ -9,7 +10,8 @@ export default async function getFundDeatils(contract_address) {
   const fundRaising = new ethers.Contract(contract_address, metadata.abi, signer);
   const fundDetails = await fundRaising.getDetails();
 
-  const [owner, raisedAmount, totalContributors, balance, contributors, requests] = fundDetails;
+  const [owner, raisedAmount, totalContributors, balance, contributors, requests, reports] =
+    fundDetails;
 
   const spendingRequests = requests.map((request) => ({
     description: request[0],
@@ -21,10 +23,14 @@ export default async function getFundDeatils(contract_address) {
       .div(BigNumber.from(BigInt(1e18)))
       .toNumber(),
     completed: request[4],
-    voters: request[5].map((v) => v.toLowerCase()),
+    minimumVotePercent: request[5],
+    voters: request[6].map((v) => v.toLowerCase()),
   }));
 
-  console.log(spendingRequests);
+  const sharedReports = reports.map((report) => ({
+    date: format(new Date(BigNumber.from(report[0]).toNumber() * 1000), "do MMMM, yyy"),
+    link: report[1],
+  }));
 
   return {
     owner,
@@ -33,5 +39,6 @@ export default async function getFundDeatils(contract_address) {
     balance: ethers.utils.formatEther(balance),
     contributors: contributors.map((c) => c.toLowerCase()),
     spendingRequests,
+    sharedReports,
   };
 }

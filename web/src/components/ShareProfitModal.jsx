@@ -1,26 +1,28 @@
 import {
   Box,
   Button,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  useDisclosure,
   FormControl,
   FormLabel,
-  InputGroup,
   Input,
+  InputGroup,
   InputRightElement,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
   Text,
+  useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import { useRef, useState } from "react";
-import contribute from "../contract/contribute";
+import shareProfit from "../contract/shareProfit";
 
-export default function ContributionModal({ contract_address, refetch, label = "Contribute" }) {
+export default function ShareProfitModal({ contract_address, refetch }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const toast = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const amountRef = useRef();
 
@@ -29,12 +31,19 @@ export default function ContributionModal({ contract_address, refetch, label = "
     try {
       setIsLoading(true);
       const amount = Number(amountRef.current.value);
-      await contribute(contract_address, amount);
+      await shareProfit(contract_address, amount);
 
       setIsLoading(false);
       setTimeout(() => {
         refetch();
       }, 5000);
+
+      toast({
+        title: "Successfully shared profit",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
       onClose();
     } catch (error) {
       setIsLoading(false);
@@ -43,14 +52,14 @@ export default function ContributionModal({ contract_address, refetch, label = "
   }
   return (
     <Box w="full">
-      <Button w="full" colorScheme="linkedin" onClick={onOpen}>
-        {label}
+      <Button w="full" colorScheme="twitter" onClick={onOpen}>
+        Share Profit
       </Button>
 
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Contribute</ModalHeader>
+          <ModalHeader>Share Profit</ModalHeader>
           <ModalCloseButton />
           <form onSubmit={handleSubmission}>
             <ModalBody>
@@ -73,7 +82,7 @@ export default function ContributionModal({ contract_address, refetch, label = "
                 Close
               </Button>
               <Button isLoading={isLoading} type="submit" colorScheme="green">
-                Contribute
+                Share
               </Button>
             </ModalFooter>
           </form>

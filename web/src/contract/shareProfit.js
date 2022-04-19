@@ -2,7 +2,7 @@ import { ethers } from "ethers";
 import FundRaisignFactory from "../assets/FundRaising.json";
 import { getWei } from "../utils/currency";
 
-export default async function contribute(contract_address, amountinEthers) {
+export default async function shareProfit(contract_address, amountinEthers) {
   try {
     const metadata = FundRaisignFactory;
     const web3Provider = window.ethereum;
@@ -11,7 +11,7 @@ export default async function contribute(contract_address, amountinEthers) {
     const fundRaising = new ethers.Contract(contract_address, metadata.abi, signer);
     const amount = getWei(amountinEthers);
 
-    await fundRaising.contribute({
+    await fundRaising.shareProfit({
       value: amount,
     });
   } catch (error) {
