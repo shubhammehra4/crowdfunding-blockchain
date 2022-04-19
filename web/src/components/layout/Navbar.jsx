@@ -90,7 +90,7 @@ function Navbar() {
             <Heading fontSize={["xl", "2xl", "4xl"]}>Fund Raising</Heading>
           </RouteLink>
 
-          <HStack as={"nav"} spacing={4} display={{ base: "none", md: "flex" }}>
+          <HStack as={"nav"} spacing={10} display={{ base: "none", md: "flex" }} pl="250px">
             {Links.map(({ label, link }) => (
               <NavLink to={link} key={link}>
                 {label}

@@ -120,7 +120,7 @@ const CreateFund = () => {
   }, []);
 
   return (
-    <Stack justifyContent="center" alignItems="center" py="6" spacing={10}>
+    <Stack justifyContent="center" alignItems="center" py="6" spacing={10} mb="50px">
       <Heading>Create a Fund Raising Campaign</Heading>
 
       <Box w="full" maxW="3xl">
