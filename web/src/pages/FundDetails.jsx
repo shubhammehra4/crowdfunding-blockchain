@@ -333,7 +333,13 @@ export default function FundDetails() {
                       {fundDetails.sharedReports.map((report) => (
                         <ListItem>
                           <Flex justifyContent="space-between">
-                            <Link color="purple.800" href={report.link} isExternal>
+                            <Link
+                              isTruncated
+                              maxW="150px"
+                              color="purple.800"
+                              href={report.link}
+                              isExternal
+                            >
                               {report.link}
                             </Link>
                             <Text>{report.date}</Text>
@@ -375,7 +381,12 @@ export default function FundDetails() {
                     balance={fundDetails.balance}
                     refetch={refetch}
                   />
-                  <ShareProfitModal contract_address={contract_address} refetch={refetch} />
+
+                  <ShareProfitModal
+                    contract_address={contract_address}
+                    refetch={refetch}
+                    isDisabled={Boolean(fundDetails.raisedAmount - fund.goal)}
+                  />
                   <ShareReport contract_address={contract_address} refetch={refetch} />
                 </Stack>
               </Box>

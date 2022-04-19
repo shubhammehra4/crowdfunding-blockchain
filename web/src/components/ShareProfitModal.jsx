@@ -20,7 +20,7 @@ import {
 import { useRef, useState } from "react";
 import shareProfit from "../contract/shareProfit";
 
-export default function ShareProfitModal({ contract_address, refetch }) {
+export default function ShareProfitModal({ contract_address, refetch, isDisabled }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
   const [isLoading, setIsLoading] = useState(false);
@@ -52,7 +52,7 @@ export default function ShareProfitModal({ contract_address, refetch }) {
   }
   return (
     <Box w="full">
-      <Button w="full" colorScheme="twitter" onClick={onOpen}>
+      <Button w="full" colorScheme="twitter" onClick={onOpen} isDisabled={isDisabled}>
         Share Profit
       </Button>
 
